@@ -24,6 +24,9 @@
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Seksi Pemakai</dt>
                         <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->seksi_pemakai ?? '-') ?></dd>
+
+                        <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Kategori Alat</dt>
+                        <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->kategori_alat ?? '-') ?></dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Nomor Identifikasi</dt>
                         <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->nomor_identifikasi) ?></dd>
@@ -191,3 +194,4 @@
     </div>
   </div>
 </div>
+
