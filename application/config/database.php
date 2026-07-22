@@ -75,11 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'ai_user',
-	'password' => 'gemini',
-	'database' => 'pmn_kalibrasi',
-	'dbdriver' => 'mysqli',
+	'hostname' => getenv('DB_HOSTNAME') ? getenv('DB_HOSTNAME') : 'localhost',
+	'username' => getenv('DB_USERNAME') ? getenv('DB_USERNAME') : 'ai_user',
+	'password' => getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : 'gemini',
+	'database' => getenv('DB_DATABASE') ? getenv('DB_DATABASE') : 'pmn_kalibrasi',
+	'dbdriver' => getenv('DB_DRIVER') ? getenv('DB_DRIVER') : 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),

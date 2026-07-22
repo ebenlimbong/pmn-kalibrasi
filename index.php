@@ -51,9 +51,26 @@
  *     testing
  *     production
  *
- * NOTE: If you change these, also change the error_reporting() code below
+/*
+ * Load .env file if present
  */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+if (file_exists(__DIR__ . '/.env')) {
+    $envLines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($envLines as $envLine) {
+        $envLine = trim($envLine);
+        if (strpos($envLine, '#') === 0 || empty($envLine)) continue;
+        if (strpos($envLine, '=') !== false) {
+            list($envName, $envValue) = explode('=', $envLine, 2);
+            $envName = trim($envName);
+            $envValue = trim($envValue, " \t\n\r\0\x0B\"'");
+            putenv("{$envName}={$envValue}");
+            $_ENV[$envName] = $envValue;
+            $_SERVER[$envName] = $envValue;
+        }
+    }
+}
+
+	define('ENVIRONMENT', getenv('CI_ENV') ? getenv('CI_ENV') : (isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development'));
 
 /*
  *---------------------------------------------------------------
