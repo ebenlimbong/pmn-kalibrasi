@@ -8,6 +8,9 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     
+    <!-- ApexCharts JS -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
     <script>
         $(document).ready(function() {
             // Auto-close alert notifications after 3.5 seconds

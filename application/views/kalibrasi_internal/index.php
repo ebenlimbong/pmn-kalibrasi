@@ -33,6 +33,99 @@
     </div>
 </div>
 
+<!-- 4 OVERVIEW CARDS (BOOTSTRAP SIMPLE CARDS) -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-primary">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Instrumen</span>
+                        <h3 class="fw-bold text-dark mb-0 mt-1"><?= esc($summary['total'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        <i class="bi bi-tools fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-success">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Passed (In-Cal)</span>
+                        <h3 class="fw-bold text-success mb-0 mt-1"><?= esc($summary['aktif'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        <i class="bi bi-check-circle fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-warning">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Jatuh Tempo Bulan Ini</span>
+                        <h3 class="fw-bold text-warning mb-0 mt-1"><?= esc($summary['due_soon'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        <i class="bi bi-exclamation-triangle fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-danger">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Out of Spec (Overdue)</span>
+                        <h3 class="fw-bold text-danger mb-0 mt-1"><?= esc($summary['overdue'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
+                    </div>
+                    <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        <i class="bi bi-x-circle fs-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHARTS SECTION (MATCHING GAMBAR 1 FROM MENTOR) -->
+<div class="row g-3 mb-4">
+    <!-- Chart 1: Yearly Maintenance Execution Curve -->
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-dark mb-0">Yearly Maintenance Execution Curve</h6>
+                <span class="badge bg-light text-secondary border">2026</span>
+            </div>
+            <div class="card-body p-3">
+                <div id="yearlyExecutionCurveInternal" style="min-height: 240px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Yearly Not Yet Finished Chart -->
+    <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-dark mb-0">Yearly Not Yet Finished Chart</h6>
+                <span class="badge bg-light text-secondary border">Per Seksi</span>
+            </div>
+            <div class="card-body p-3">
+                <div id="yearlyNotFinishedChartInternal" style="min-height: 240px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-4">
         <div class="row align-items-center mb-3 g-2">
@@ -234,5 +327,68 @@ window.addEventListener('DOMContentLoaded', function() {
             location.reload();
         });
     }
+
+    // Initialize ApexCharts (Matching Gambar 1 from Mentor)
+    var targetData = <?= json_encode($chartData['target_monthly'] ?? array_fill(0,12,0)) ?>;
+    var finishedData = <?= json_encode($chartData['finished_monthly'] ?? array_fill(0,12,0)) ?>;
+    
+    var seksiCategories = <?= json_encode(!empty($chartData['seksi_categories']) ? $chartData['seksi_categories'] : array('Bengkel', 'QC Lab', 'Maintenance')) ?>;
+    var seksiPostponed = <?= json_encode(!empty($chartData['seksi_postponed']) ? $chartData['seksi_postponed'] : array(0, 0, 0)) ?>;
+    var seksiContinued = <?= json_encode(!empty($chartData['seksi_continued']) ? $chartData['seksi_continued'] : array(1, 1, 1)) ?>;
+
+    var curveOptions = {
+        series: [{
+            name: 'Finished',
+            data: finishedData
+        }, {
+            name: 'Target',
+            data: targetData
+        }],
+        chart: {
+            height: 240,
+            type: 'line',
+            toolbar: { show: true },
+            zoom: { enabled: false }
+        },
+        colors: ['#e74c3c', '#3498db'],
+        dataLabels: { enabled: false },
+        stroke: { curve: 'smooth', width: 3 },
+        xaxis: {
+            categories: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+        },
+        legend: { position: 'bottom' },
+        grid: { borderColor: '#f1f1f1' }
+    };
+    var curveChart = new ApexCharts(document.querySelector("#yearlyExecutionCurveInternal"), curveOptions);
+    curveChart.render();
+
+    var barOptions = {
+        series: [{
+            name: 'Postponed',
+            data: seksiPostponed
+        }, {
+            name: 'Continued',
+            data: seksiContinued
+        }],
+        chart: {
+            type: 'bar',
+            height: 240,
+            stacked: true,
+            toolbar: { show: false }
+        },
+        colors: ['#f1c40f', '#2ecc71'],
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '35%',
+                borderRadius: 4
+            }
+        },
+        xaxis: { categories: seksiCategories },
+        legend: { position: 'bottom' },
+        fill: { opacity: 1 }
+    };
+    var barChart = new ApexCharts(document.querySelector("#yearlyNotFinishedChartInternal"), barOptions);
+    barChart.render();
 });
 </script>
