@@ -70,6 +70,7 @@
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Nama Instrumen</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Seksi Pemakai</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">No Identifikasi</th>
+                        <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Umur Instrumen</th>
                         <th colspan="4" class="fw-bold border-bottom-0 text-center">Spesifikasi</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Kegunaan</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Periode</th>
@@ -84,7 +85,7 @@
                         <th class="fw-bold text-dark text-center">Ketelitian</th>
                         <th class="fw-bold text-dark text-center">Model</th>
                         <th class="fw-bold text-dark text-center">Pembuat</th>
-                        <th class="fw-bold text-dark text-center">Terakhir Kalibrasi</th>
+                        <th class="fw-bold text-dark text-center">Tanggal Kalibrasi</th>
                         <th class="fw-bold text-dark text-center">Badan Kalibrasi</th>
                         <th class="fw-bold text-dark text-center">NO Sertifikat</th>
                         <th class="fw-bold text-dark text-center">Tahun Berikutnya</th>
@@ -93,7 +94,7 @@
                 <tbody>
                     <?php if(empty($instrumen)) : ?>
                         <tr>
-                            <td colspan="18" class="text-center py-4 text-muted">Belum ada data instrumen.</td>
+                            <td colspan="19" class="text-center py-4 text-muted">Belum ada data instrumen.</td>
                         </tr>
                     <?php else : ?>
                         <?php foreach($instrumen as $item) : ?>
@@ -108,6 +109,7 @@
                                 <td class="text-start"><?= esc($item->nama_instrumen ?? '-') ?></td>
                                 <td><?= esc($item->seksi_pemakai ?? '-') ?></td>
                                 <td class="fw-medium text-primary"><?= esc($item->nomor_identifikasi) ?></td>
+                                <td><span class="badge bg-secondary bg-opacity-10 text-dark border"><?= esc(hitung_umur_instrumen($item->tanggal_mulai_digunakan ?? '')) ?></span></td>
                                 <td><?= esc($item->interval_kapasitas ?? '-') ?></td>
                                 <td><?= esc($item->ketelitian ?? '-') ?></td>
                                 <td><?= esc($item->model_tipe ?? '-') ?></td>

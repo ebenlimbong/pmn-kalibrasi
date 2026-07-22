@@ -99,6 +99,7 @@ class Kalibrasi extends CI_Controller {
             'pembuat'            => $this->input->post('pembuat'),
             'kegunaan'           => $this->input->post('kegunaan'),
             'periode_kalibrasi'  => $periodeKalibrasi,
+            'tanggal_mulai_digunakan' => $this->input->post('tanggal_mulai_digunakan'),
             'batas_penerimaan'   => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
             'keterangan'         => $this->input->post('keterangan'),
         );
@@ -187,6 +188,7 @@ class Kalibrasi extends CI_Controller {
             'pembuat'            => $this->input->post('pembuat'),
             'kegunaan'           => $this->input->post('kegunaan'),
             'periode_kalibrasi'  => $this->input->post('periode_kalibrasi'),
+            'tanggal_mulai_digunakan' => $this->input->post('tanggal_mulai_digunakan'),
             'batas_penerimaan'   => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
             'keterangan'         => $this->input->post('keterangan'),
         );

@@ -26,7 +26,13 @@
                         <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->seksi_pemakai ?? '-') ?></dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Nomor Identifikasi</dt>
-                        <dd class="col-sm-12 text-muted mb-3"><?= esc($instrumen->nomor_identifikasi) ?></dd>
+                        <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->nomor_identifikasi) ?></dd>
+
+                        <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Tanggal Pertama Digunakan</dt>
+                        <dd class="col-sm-12 text-muted mb-2"><?= !empty($instrumen->tanggal_mulai_digunakan) ? date('d-m-Y', strtotime($instrumen->tanggal_mulai_digunakan)) : '-' ?></dd>
+                        
+                        <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Umur Instrumen</dt>
+                        <dd class="col-sm-12 text-muted mb-3"><span class="badge bg-secondary bg-opacity-10 text-dark border"><?= esc(hitung_umur_instrumen($instrumen->tanggal_mulai_digunakan ?? '')) ?></span></dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-1" style="font-size: 0.85rem; border-bottom: 1px solid #eee; padding-bottom: 4px;">Spesifikasi</dt>
                         <dd class="col-sm-12 text-muted mb-3">
@@ -83,7 +89,7 @@
                     <table class="table table-hover table-borderless border-bottom mb-0 align-middle text-nowrap text-center" style="font-size: 0.9rem;">
                         <thead class="bg-light align-middle text-dark text-center" style="font-size: 0.85rem;">
                             <tr class="border-bottom border-light">
-                                <th class="fw-bold border-bottom-0">Terakhir Kalibrasi</th>
+                                <th class="fw-bold border-bottom-0">Tanggal Kalibrasi</th>
                                 <th class="fw-bold border-bottom-0">Badan Kalibrasi</th>
                                 <th class="fw-bold border-bottom-0">No sertifikat</th>
                                 <th class="fw-bold border-bottom-0">Kalibrasi Berikutnya</th>
@@ -165,7 +171,7 @@
           <?= csrf_field() ?>
           <div class="modal-body">
               <div class="mb-3">
-                  <label class="form-label text-muted fw-medium">Tanggal Terakhir Kalibrasi <span class="text-danger">*</span></label>
+                  <label class="form-label text-muted fw-medium">Tanggal Kalibrasi <span class="text-danger">*</span></label>
                   <input type="date" class="form-control" name="tanggal_terakhir" required>
               </div>
               <div class="mb-3">

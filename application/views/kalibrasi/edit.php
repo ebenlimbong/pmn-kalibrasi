@@ -162,14 +162,18 @@
                             <input type="text" class="form-control" name="pembuat" value="<?= esc($instrumen->pembuat ?? '') ?>">
                         </div>
 
-                        <!-- Row 3: Kegunaan & Periode & Batas -->
-                        <div class="col-md-6">
+                        <!-- Row 3: Kegunaan & Periode & Tanggal Pertama Digunakan & Batas -->
+                        <div class="col-md-3">
                             <label class="form-label text-dark fw-medium">Kegunaan</label>
                             <input type="text" class="form-control" name="kegunaan" value="<?= esc($instrumen->kegunaan ?? '') ?>">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label text-dark fw-medium">Periode <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" name="periode_kalibrasi" required value="<?= esc($instrumen->periode_kalibrasi) ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-dark fw-medium">Tanggal Pertama Digunakan</label>
+                            <input type="date" class="form-control" name="tanggal_mulai_digunakan" value="<?= esc($instrumen->tanggal_mulai_digunakan ?? '') ?>">
                         </div>
                         <div class="col-md-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -222,7 +226,7 @@
                     <input type="hidden" name="riwayat_id" value="<?= esc($riwayat->id ?? '') ?>">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label text-dark fw-medium">Tanggal Terakhir Kalibrasi</label>
+                            <label class="form-label text-dark fw-medium">Tanggal Kalibrasi</label>
                             <input type="date" class="form-control" name="tanggal_terakhir" value="<?= esc($riwayat->tanggal_terakhir ?? '') ?>">
                         </div>
                         <div class="col-md-6">
