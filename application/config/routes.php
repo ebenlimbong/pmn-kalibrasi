@@ -52,3 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'kalibrasi';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['kalibrasi-internal'] = 'kalibrasiInternal';
+$route['kalibrasi-internal/(:any)'] = 'kalibrasiInternal/$1';
