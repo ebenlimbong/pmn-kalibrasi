@@ -55,8 +55,8 @@ class KalibrasiInternal extends CI_Controller {
             show_404();
         }
 
-        // Generate QR Code URL
-        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . urlencode(base_url('kalibrasi-internal/detail/' . $id));
+        $this->load->library('qrcode');
+        $qrUrl = $this->qrcode->generate(base_url('kalibrasi-internal/detail/' . $id));
 
         $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_nomor($instrumen->nomor_identifikasi);
         usort($riwayat, function($a, $b) {

@@ -55,8 +55,8 @@ class Kalibrasi extends CI_Controller {
             show_404();
         }
 
-        // Generate QR Code URL or SVG placeholder
-        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . urlencode(base_url('kalibrasi/detail/' . $id));
+        $this->load->library('qrcode');
+        $qrUrl = $this->qrcode->generate(base_url('kalibrasi/detail/' . $id));
 
         $riwayat = $this->RiwayatKalibrasi_model->get_by_nomor($instrumen->nomor_identifikasi);
         // Order by tanggal_terakhir DESC for view display
