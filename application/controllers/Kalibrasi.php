@@ -158,9 +158,13 @@ class Kalibrasi extends CI_Controller {
             show_404();
         }
 
+        $riwayatList = $this->RiwayatKalibrasi_model->get_by_nomor($instrumen->nomor_identifikasi);
+        $latestRiwayat = !empty($riwayatList) ? end($riwayatList) : null;
+
         $data = array(
             'title' => 'Edit Instrumen',
-            'instrumen' => $instrumen
+            'instrumen' => $instrumen,
+            'riwayat' => $latestRiwayat
         );
         $this->load->view('layout/header', $data);
         $this->load->view('kalibrasi/edit', $data);
@@ -206,6 +210,43 @@ class Kalibrasi extends CI_Controller {
         }
 
         $this->MasterInstrumen_model->update($id, $updateData);
+
+        // Update or insert latest calibration history
+        $riwayatId = $this->input->post('riwayat_id');
+        $tanggalTerakhir = $this->input->post('tanggal_terakhir');
+        
+        if (!empty($tanggalTerakhir)) {
+            $periodeKalibrasi = $updateData['periode_kalibrasi'];
+            $riwayatData = array(
+                'nomor_identifikasi' => $updateData['nomor_identifikasi'],
+                'tanggal_terakhir'   => $tanggalTerakhir,
+                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int)$periodeKalibrasi . ' years', strtotime($tanggalTerakhir))),
+                'badan_kalibrasi'    => $this->input->post('badan_kalibrasi'),
+                'nomor_sertifikat'   => $this->input->post('nomor_sertifikat'),
+                'status'             => 'Aktif'
+            );
+
+            // Handle file_sertifikat upload
+            if (!empty($_FILES['file_sertifikat']['name'])) {
+                $configCert['upload_path']   = './uploads/sertifikat/';
+                $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
+                $configCert['encrypt_name']  = TRUE;
+                $this->load->library('upload', $configCert);
+                $this->upload->initialize($configCert);
+
+                if ($this->upload->do_upload('file_sertifikat')) {
+                    $uploadCert = $this->upload->data();
+                    $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
+                }
+            }
+
+            if (!empty($riwayatId)) {
+                $this->RiwayatKalibrasi_model->update($riwayatId, $riwayatData);
+            } else {
+                $this->RiwayatKalibrasi_model->insert($riwayatData);
+            }
+        }
+
         $this->session->set_flashdata('success', 'Data instrumen berhasil diupdate.');
         redirect('kalibrasi');
     }

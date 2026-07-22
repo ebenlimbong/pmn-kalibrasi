@@ -54,4 +54,6 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['kalibrasi-internal'] = 'kalibrasiInternal';
-$route['kalibrasi-internal/(:any)'] = 'kalibrasiInternal/$1';
+$route['kalibrasi-internal/(.+)'] = 'kalibrasiInternal/$1';
+$route['kalibrasiInternal'] = 'kalibrasiInternal';
+$route['kalibrasiInternal/(.+)'] = 'kalibrasiInternal/$1';

@@ -212,6 +212,28 @@
                         </div>
                     </div>
                 </div>
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-white pt-4 pb-0 border-0">
+                    <h5 class="text-dark fw-bold mb-0">Data Kalibrasi Terakhir</h5>
+                </div>
+                <div class="card-body p-4">
+                    <input type="hidden" name="riwayat_id" value="<?= esc($riwayat->id ?? '') ?>">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-dark fw-medium">Tanggal Terakhir Kalibrasi</label>
+                            <input type="date" class="form-control" name="tanggal_terakhir" value="<?= esc($riwayat->tanggal_terakhir ?? '') ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-dark fw-medium">Lampiran (Upload baru untuk mengganti)</label>
+                            <?php if(!empty($riwayat->file_sertifikat)): ?>
+                                <div class="mb-2">
+                                    <a href="<?= base_url('uploads/sertifikat/' . $riwayat->file_sertifikat) ?>" target="_blank" class="badge bg-info text-decoration-none">Lihat Lampiran Saat Ini</a>
+                                </div>
+                            <?php endif; ?>
+                            <input type="file" class="form-control" name="file_sertifikat" accept=".pdf,image/*">
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="d-flex justify-content-end mb-5">
