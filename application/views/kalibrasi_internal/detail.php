@@ -32,7 +32,7 @@
                         <dd class="col-sm-12 text-muted mb-2"><?= !empty($instrumen->tanggal_mulai_digunakan) ? date('d-m-Y', strtotime($instrumen->tanggal_mulai_digunakan)) : '-' ?></dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Umur Instrumen</dt>
-                        <dd class="col-sm-12 text-muted mb-3"><span class="badge bg-secondary bg-opacity-10 text-dark border"><?= esc(hitung_umur_instrumen($instrumen->tanggal_mulai_digunakan ?? '')) ?></span></dd>
+                        <dd class="col-sm-12 text-muted mb-3"><span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 fw-medium" style="font-size: 0.78rem; background-color: #f8f9fa !important; border-color: #dee2e6 !important;"><i class="bi bi-clock-history me-1 opacity-75"></i><?= esc(hitung_umur_instrumen($instrumen->tanggal_mulai_digunakan ?? '')) ?></span></dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-1" style="font-size: 0.85rem; border-bottom: 1px solid #eee; padding-bottom: 4px;">Spesifikasi</dt>
                         <dd class="col-sm-12 text-muted mb-3">

@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <table id="tabelInstrumen" class="table table-hover align-middle mb-0 table-sm text-nowrap text-center" style="width:100%">
+        <table id="tabelInstrumen" class="table table-hover align-middle mb-0 table-sm text-nowrap text-center" style="width:100%; font-size: 0.9rem;">
                 <thead class="bg-light align-middle text-center text-dark" style="font-size: 0.85rem;">
                     <tr class="border-bottom border-light">
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Foto</th>
@@ -106,8 +106,8 @@
                                 </td>
                                 <td class="text-start"><?= esc($item->nama_instrumen ?? '-') ?></td>
                                 <td><?= esc($item->seksi_pemakai ?? '-') ?></td>
-                                <td class="fw-medium text-primary"><?= esc($item->nomor_identifikasi) ?></td>
-                                <td><span class="badge bg-secondary bg-opacity-10 text-dark border"><?= esc(hitung_umur_instrumen($item->tanggal_mulai_digunakan ?? '')) ?></span></td>
+                                <td class="fw-medium text-dark"><?= esc($item->nomor_identifikasi) ?></td>
+                                <td><span class="badge bg-light text-secondary border rounded-pill px-2 py-1 fw-medium" style="font-size: 0.78rem; background-color: #f8f9fa !important; border-color: #dee2e6 !important;"><i class="bi bi-clock-history me-1 opacity-75"></i><?= esc(hitung_umur_instrumen($item->tanggal_mulai_digunakan ?? '')) ?></span></td>
                                 <td><?= esc($item->interval_kapasitas ?? '-') ?></td>
                                 <td><?= esc($item->ketelitian ?? '-') ?></td>
                                 <td><?= esc($item->model_tipe ?? '-') ?></td>
