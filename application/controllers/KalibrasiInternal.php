@@ -164,6 +164,7 @@ class KalibrasiInternal extends CI_Controller {
             'nomor_identifikasi' => $nomorIdentifikasi,
             'nama_instrumen'     => $this->input->post('nama_instrumen'),
             'seksi_pemakai'      => $this->input->post('seksi_pemakai'),
+            'kategori_alat'      => $this->input->post('kategori_alat'),
             'interval_kapasitas' => $this->processMultiInput($this->input->post('interval_nilai'), $this->input->post('interval_satuan')),
             'ketelitian'         => $this->processMultiInput($this->input->post('ketelitian_nilai'), $this->input->post('ketelitian_satuan')),
             'model_tipe'         => $this->input->post('model_tipe'),
@@ -250,6 +251,7 @@ class KalibrasiInternal extends CI_Controller {
             'nomor_identifikasi' => $this->input->post('nomor_identifikasi'),
             'nama_instrumen'     => $this->input->post('nama_instrumen'),
             'seksi_pemakai'      => $this->input->post('seksi_pemakai'),
+            'kategori_alat'      => $this->input->post('kategori_alat'),
             'interval_kapasitas' => $this->processMultiInput($this->input->post('interval_nilai'), $this->input->post('interval_satuan')),
             'ketelitian'         => $this->processMultiInput($this->input->post('ketelitian_nilai'), $this->input->post('ketelitian_satuan')),
             'model_tipe'         => $this->input->post('model_tipe'),
@@ -418,3 +420,4 @@ class KalibrasiInternal extends CI_Controller {
             )));
     }
 }
+

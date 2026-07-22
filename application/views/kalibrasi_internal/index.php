@@ -162,6 +162,7 @@
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Foto</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Nama Instrumen</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Seksi Pemakai</th>
+                        <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Kategori Alat</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">No Identifikasi</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Umur Instrumen</th>
                         <th colspan="4" class="fw-bold border-bottom-0 text-center">Spesifikasi</th>
@@ -185,7 +186,7 @@
                 <tbody>
                     <?php if(empty($instrumen)) : ?>
                         <tr>
-                            <td colspan="17" class="text-center py-4 text-muted">Belum ada data instrumen standar kerja.</td>
+                            <td colspan="18" class="text-center py-4 text-muted">Belum ada data instrumen standar kerja.</td>
                         </tr>
                     <?php else : ?>
                         <?php foreach($instrumen as $item) : ?>
@@ -199,6 +200,7 @@
                                 </td>
                                 <td class="text-start"><?= esc($item->nama_instrumen ?? '-') ?></td>
                                 <td><?= esc($item->seksi_pemakai ?? '-') ?></td>
+                                <td><span class="badge bg-info bg-opacity-10 text-dark border border-info border-opacity-25 px-2 py-1" style="font-size: 0.78rem;"><?= esc($item->kategori_alat ?? '-') ?></span></td>
                                 <td class="fw-medium text-dark"><?= esc($item->nomor_identifikasi) ?></td>
                                 <td><span class="badge bg-light text-secondary border rounded-pill px-2 py-1 fw-medium" style="font-size: 0.78rem; background-color: #f8f9fa !important; border-color: #dee2e6 !important;"><i class="bi bi-clock-history me-1 opacity-75"></i><?= esc(hitung_umur_instrumen($item->tanggal_mulai_digunakan ?? '')) ?></span></td>
                                 <td><?= esc($item->interval_kapasitas ?? '-') ?></td>
@@ -392,3 +394,4 @@ window.addEventListener('DOMContentLoaded', function() {
     barChart.render();
 });
 </script>
+

@@ -27,35 +27,58 @@
                             <input type="text" class="form-control" name="nomor_identifikasi" required value="<?= esc($instrumen->nomor_identifikasi) ?>">
                         </div>
                         
-                        <!-- Kategori Alat -->
+                        <!-- Kategori (Main Header) -->
                         <div class="col-12 mt-4">
-                            <h6 class="fw-bold text-dark mb-2">Kategori</h6>
-                            <style>
-                                .kategori-btn {
-                                    color: #495057;
-                                    border: 1px solid #ced4da;
-                                    background-color: transparent;
-                                    font-size: 0.85rem;
-                                }
-                                .kategori-btn:hover {
-                                    background-color: #f8f9fa;
-                                    color: #212529;
-                                }
-                                .kategori-btn.active-kategori {
-                                    background-color: #2c3e50;
-                                    border-color: #2c3e50;
-                                    color: #ffffff !important;
-                                }
-                            </style>
-                            <div class="d-flex flex-wrap gap-2 mb-3" id="kategori-container">
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="suhu">Suhu</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="kelistrikan">Kelistrikan</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="tekanan">Tekanan</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="volume">Volume</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="sudut">Sudut & Kemiringan</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="cahaya">Cahaya</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="gas">Gas & Lingkungan</button>
-                                <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="dimensi">Dimensi</button>
+                            <h6 class="fw-bold text-dark mb-3" style="border-bottom: 2px solid #edf2f9; padding-bottom: 8px;">Kategori</h6>
+                            <div class="row align-items-start g-3">
+                                <!-- Sub Kategori: Satuan (Kiri) -->
+                                <div class="col-12 col-lg-7">
+                                    <label class="form-label text-muted fw-bold text-uppercase mb-2" style="font-size: 0.78rem; letter-spacing: 0.5px;">Satuan</label>
+                                    <style>
+                                        .kategori-btn {
+                                            color: #495057;
+                                            border: 1px solid #ced4da;
+                                            background-color: transparent;
+                                            font-size: 0.85rem;
+                                        }
+                                        .kategori-btn:hover {
+                                            background-color: #f8f9fa;
+                                            color: #212529;
+                                        }
+                                        .kategori-btn.active-kategori {
+                                            background-color: #2c3e50;
+                                            border-color: #2c3e50;
+                                            color: #ffffff !important;
+                                        }
+                                    </style>
+                                    <div class="d-flex flex-wrap gap-2 mb-2" id="kategori-container">
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="suhu">Suhu</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="kelistrikan">Kelistrikan</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="tekanan">Tekanan</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="volume">Volume</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="sudut">Sudut & Kemiringan</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="cahaya">Cahaya</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="gas">Gas & Lingkungan</button>
+                                        <button type="button" class="btn rounded-pill kategori-btn fw-medium px-3 py-1" style="font-size: 0.8rem;" data-kategori="dimensi">Dimensi</button>
+                                    </div>
+                                </div>
+
+                                <!-- Sub Kategori: Alat (Disamping Kiri) -->
+                                <div class="col-12 col-lg-5">
+                                    <label class="form-label text-muted fw-bold text-uppercase mb-2" style="font-size: 0.78rem; letter-spacing: 0.5px;">Alat</label>
+                                    <select class="form-select border shadow-sm" name="kategori_alat" style="max-height: 140px; overflow-y: auto;">
+                                        <option value="">-- Pilih Kategori Alat --</option>
+                                        <option value="Pressure Gauge" <?= ($instrumen->kategori_alat ?? '') === 'Pressure Gauge' ? 'selected' : '' ?>>Pressure Gauge</option>
+                                        <option value="Pressure Switch" <?= ($instrumen->kategori_alat ?? '') === 'Pressure Switch' ? 'selected' : '' ?>>Pressure Switch</option>
+                                        <option value="RTD (Resistance Temperature Detector)" <?= ($instrumen->kategori_alat ?? '') === 'RTD (Resistance Temperature Detector)' ? 'selected' : '' ?>>RTD (Resistance Temperature Detector)</option>
+                                        <option value="Measurement Voltage" <?= ($instrumen->kategori_alat ?? '') === 'Measurement Voltage' ? 'selected' : '' ?>>Measurement Voltage</option>
+                                        <option value="Measurement Current" <?= ($instrumen->kategori_alat ?? '') === 'Measurement Current' ? 'selected' : '' ?>>Measurement Current</option>
+                                        <option value="Measurement Resistance" <?= ($instrumen->kategori_alat ?? '') === 'Measurement Resistance' ? 'selected' : '' ?>>Measurement Resistance</option>
+                                        <option value="Multimeter" <?= ($instrumen->kategori_alat ?? '') === 'Multimeter' ? 'selected' : '' ?>>Multimeter</option>
+                                        <option value="Transducer / Transmitter" <?= ($instrumen->kategori_alat ?? '') === 'Transducer / Transmitter' ? 'selected' : '' ?>>Transducer / Transmitter</option>
+                                        <option value="Thermometer" <?= ($instrumen->kategori_alat ?? '') === 'Thermometer' ? 'selected' : '' ?>>Thermometer</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -451,3 +474,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
