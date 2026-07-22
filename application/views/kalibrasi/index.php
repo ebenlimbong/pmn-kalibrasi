@@ -29,7 +29,7 @@
     <h6 class="text-uppercase fw-bold text-secondary mb-3" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
     <div class="kalibrasi-tabs shadow-sm">
         <a href="<?= base_url('kalibrasi') ?>" class="kalibrasi-tab active">Eksternal</a>
-        <a href="<?= base_url('kalibrasiInternal') ?>" class="kalibrasi-tab">Internal</a>
+        <a href="<?= base_url('kalibrasi-internal') ?>" class="kalibrasi-tab">Internal</a>
     </div>
 </div>
 

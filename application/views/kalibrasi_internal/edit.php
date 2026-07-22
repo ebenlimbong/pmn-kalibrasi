@@ -212,6 +212,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="card-header bg-white pt-4 pb-0 border-0">
                     <h5 class="text-dark fw-bold mb-0">Data Kalibrasi Terakhir</h5>
