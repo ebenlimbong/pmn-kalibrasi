@@ -1,42 +1,86 @@
 <style>
 .kalibrasi-tabs {
     display: inline-flex;
-    background-color: #f1f3f5;
-    border-radius: 8px;
+    background-color: #e9ecef;
+    border-radius: 10px;
     padding: 4px;
 }
 .kalibrasi-tab {
-    padding: 8px 40px;
+    padding: 8px 24px;
     color: #6c757d;
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.95rem;
-    border-radius: 6px;
+    font-size: 0.9rem;
+    border-radius: 8px;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    text-align: center;
 }
 .kalibrasi-tab:hover {
-    color: #495057;
+    color: #343a40;
 }
 .kalibrasi-tab.active {
     background-color: #ffffff;
-    color: #3b5998;
+    color: #2c3e50;
     font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+@media (max-width: 575.98px) {
+    .kalibrasi-tabs {
+        width: 100%;
+        display: flex;
+    }
+    .kalibrasi-tabs .dropdown {
+        flex: 1;
+        display: flex;
+    }
+    .kalibrasi-tab {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
 }
 </style>
 
-<div class="d-flex flex-wrap align-items-center justify-content-between mb-4 mt-3 gap-3">
-    <div>
-        <h6 class="text-uppercase fw-bold text-secondary mb-2" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
-        <div class="d-flex flex-wrap gap-3 align-items-center">
-            <div class="kalibrasi-tabs shadow-sm">
-                <a href="<?= base_url('kalibrasi') ?>" class="kalibrasi-tab active">Eksternal</a>
-                <a href="<?= base_url('kalibrasi-internal') ?>" class="kalibrasi-tab">Internal</a>
-            </div>
-            <div class="kalibrasi-tabs shadow-sm">
-                <button type="button" id="btn-view-dashboard" class="kalibrasi-tab active border-0" onclick="switchViewMode('dashboard')">Dashboard Overview</button>
-                <button type="button" id="btn-view-data" class="kalibrasi-tab border-0" onclick="switchViewMode('data')">Data Instrumen</button>
-            </div>
+<div class="mb-4 mt-3">
+    <h6 class="text-uppercase fw-bold text-secondary mb-2" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
+    <div class="kalibrasi-tabs shadow-sm">
+        <!-- Eksternal Dropdown -->
+        <div class="dropdown">
+            <button type="button" id="btn-eksternal-dropdown" class="kalibrasi-tab active dropdown-toggle border-0" data-bs-toggle="dropdown" aria-expanded="false">
+                Eksternal
+            </button>
+            <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-1">
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="#" onclick="switchViewMode('dashboard'); return false;">
+                        <i class="bi bi-speedometer2 text-primary"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="#" onclick="switchViewMode('data'); return false;">
+                        <i class="bi bi-table text-primary"></i> Instrumen
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Internal Dropdown -->
+        <div class="dropdown">
+            <button type="button" id="btn-internal-dropdown" class="kalibrasi-tab dropdown-toggle border-0" data-bs-toggle="dropdown" aria-expanded="false">
+                Internal
+            </button>
+            <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-1">
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="<?= base_url('kalibrasi-internal?tab=dashboard') ?>">
+                        <i class="bi bi-speedometer2 text-primary"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="<?= base_url('kalibrasi-internal?tab=data') ?>">
+                        <i class="bi bi-table text-primary"></i> Instrumen
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
@@ -171,6 +215,7 @@
             </div>
         </div>
     </div>
+</div> <!-- END Charts Row 2 -->
 </div> <!-- END #section-dashboard-view -->
 
 <!-- SECTION 2: DATA INSTRUMEN TABLE -->
@@ -545,32 +590,57 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 function switchViewMode(mode) {
+    var dashboardSec = document.getElementById('section-dashboard-view');
+    var dataSec = document.getElementById('section-data-view');
+    var btnDashboard = document.getElementById('btn-view-dashboard');
+    var btnData = document.getElementById('btn-view-data');
+
+    if (!dashboardSec || !dataSec) return;
+
     if (mode === 'data') {
-        $('#section-dashboard-view').hide();
-        $('#section-data-view').fadeIn(150);
-        $('#btn-view-dashboard').removeClass('active');
-        $('#btn-view-data').addClass('active');
-        if ($.fn.DataTable.isDataTable('#tabelInstrumen')) {
-            $('#tabelInstrumen').DataTable().columns.adjust();
+        dashboardSec.style.display = 'none';
+        dataSec.style.display = 'block';
+
+        if (btnDashboard) btnDashboard.classList.remove('active');
+        if (btnData) btnData.classList.add('active');
+
+        setTimeout(function() {
+            if (window.jQuery && $.fn && $.fn.DataTable && $.fn.DataTable.isDataTable('#tabelInstrumen')) {
+                $('#tabelInstrumen').DataTable().columns.adjust();
+            }
+        }, 50);
+
+        if (window.history && window.history.replaceState) {
+            var url = new URL(window.location);
+            url.searchParams.set('tab', 'data');
+            window.history.replaceState({}, '', url);
         }
-        const url = new URL(window.location);
-        url.searchParams.set('tab', 'data');
-        window.history.replaceState({}, '', url);
     } else {
-        $('#section-data-view').hide();
-        $('#section-dashboard-view').fadeIn(150);
-        $('#btn-view-data').removeClass('active');
-        $('#btn-view-dashboard').addClass('active');
-        const url = new URL(window.location);
-        url.searchParams.set('tab', 'dashboard');
-        window.history.replaceState({}, '', url);
+        dataSec.style.display = 'none';
+        dashboardSec.style.display = 'block';
+
+        if (btnData) btnData.classList.remove('active');
+        if (btnDashboard) btnDashboard.classList.add('active');
+
+        if (window.history && window.history.replaceState) {
+            var url = new URL(window.location);
+            url.searchParams.set('tab', 'dashboard');
+            window.history.replaceState({}, '', url);
+        }
     }
 }
 
-$(document).ready(function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('tab') === 'data' || urlParams.get('view') === 'data') {
-        switchViewMode('data');
+(function() {
+    function checkInitialTab() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'data' || urlParams.get('view') === 'data') {
+            switchViewMode('data');
+        }
     }
-});
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkInitialTab);
+    } else {
+        checkInitialTab();
+    }
+})();
 </script>
