@@ -31,7 +31,31 @@ class Kalibrasi extends CI_Controller {
 
     public function index() {
         $instrumenList = $this->MasterInstrumen_model->getInstrumenWithLatestKalibrasi();
+        $allRiwayat = $this->RiwayatKalibrasi_model->get_all();
         
+        $selectedYear = $this->input->get('tahun') ? (int)$this->input->get('tahun') : (int)date('Y');
+
+        // Extract all available years from database
+        $yearsSet = array((int)date('Y'), 2026, 2025, 2024);
+        foreach ($instrumenList as $item) {
+            if (!empty($item->tanggal_berikutnya)) {
+                $y = (int)date('Y', strtotime($item->tanggal_berikutnya));
+                if ($y > 2000) $yearsSet[] = $y;
+            }
+            if (!empty($item->tanggal_terakhir)) {
+                $y = (int)date('Y', strtotime($item->tanggal_terakhir));
+                if ($y > 2000) $yearsSet[] = $y;
+            }
+        }
+        foreach ($allRiwayat as $r) {
+            if (!empty($r->tanggal_terakhir)) {
+                $y = (int)date('Y', strtotime($r->tanggal_terakhir));
+                if ($y > 2000) $yearsSet[] = $y;
+            }
+        }
+        $availableYears = array_values(array_unique($yearsSet));
+        rsort($availableYears);
+
         $today = date('Y-m-d');
         $in30days = date('Y-m-d', strtotime('+30 days'));
 
@@ -62,15 +86,13 @@ class Kalibrasi extends CI_Controller {
                     $aktifCount++;
                 }
 
-                $mTarget = (int) date('n', strtotime($item->tanggal_berikutnya));
-                $targetMonthly[$mTarget]++;
+                // Count target for selected year only
+                if ((int)date('Y', strtotime($item->tanggal_berikutnya)) === $selectedYear) {
+                    $mTarget = (int) date('n', strtotime($item->tanggal_berikutnya));
+                    $targetMonthly[$mTarget]++;
+                }
             } else {
                 $overdueCount++;
-            }
-
-            if (!empty($item->tanggal_terakhir)) {
-                $mFinished = (int) date('n', strtotime($item->tanggal_terakhir));
-                $finishedMonthly[$mFinished]++;
             }
 
             $seksi = !empty($item->seksi_pemakai) ? $item->seksi_pemakai : 'QC Lab';
@@ -102,34 +124,42 @@ class Kalibrasi extends CI_Controller {
             }
         }
 
-        // Fallback demo data matching mentor's sample if actual counts are low
-        if (array_sum($targetMonthly) == 0 && array_sum($finishedMonthly) == 0) {
-            $targetMonthly = array(125, 118, 170, 162, 138, 172, 110, 0, 0, 0, 0, 0);
-            $finishedMonthly = array(125, 112, 168, 155, 130, 122, 15, 0, 0, 0, 0, 0);
-            $seksiStats = array(
-                'PMN-ELC' => array('postponed' => 0, 'continued' => 3),
-                'PMN-INS' => array('postponed' => 1, 'continued' => 15),
-                'PMN-MEC' => array('postponed' => 0, 'continued' => 2),
-                'QC Lab'  => array('postponed' => 1, 'continued' => 8)
-            );
+        // Count finished calibrations for selected year (from all history and master records)
+        $finishedRecords = array();
+        foreach ($allRiwayat as $r) {
+            if (!empty($r->tanggal_terakhir)) {
+                $finishedRecords[] = array(
+                    'nomor' => $r->nomor_identifikasi,
+                    'tanggal' => $r->tanggal_terakhir
+                );
+            }
+        }
+        foreach ($instrumenList as $item) {
+            if (!empty($item->tanggal_terakhir)) {
+                $finishedRecords[] = array(
+                    'nomor' => $item->nomor_identifikasi,
+                    'tanggal' => $item->tanggal_terakhir
+                );
+            }
         }
 
-        if (empty($katStats) || count($katStats) <= 1) {
-            $katStats = array(
-                'Pressure Gauge' => array('in_cal' => 14, 'due_soon' => 2, 'overdue' => 1),
-                'Pressure Switch' => array('in_cal' => 10, 'due_soon' => 1, 'overdue' => 1),
-                'RTD (Temperature)' => array('in_cal' => 8, 'due_soon' => 1, 'overdue' => 0),
-                'Multimeter' => array('in_cal' => 12, 'due_soon' => 1, 'overdue' => 1),
-                'Transducer / Transmitter' => array('in_cal' => 9, 'due_soon' => 0, 'overdue' => 1),
-                'Thermometer' => array('in_cal' => 6, 'due_soon' => 1, 'overdue' => 0)
-            );
+        $uniqueFinished = array();
+        foreach ($finishedRecords as $fr) {
+            $key = $fr['nomor'] . '_' . $fr['tanggal'];
+            if (!isset($uniqueFinished[$key])) {
+                $uniqueFinished[$key] = true;
+                if ((int)date('Y', strtotime($fr['tanggal'])) === $selectedYear) {
+                    $mFinished = (int) date('n', strtotime($fr['tanggal']));
+                    $finishedMonthly[$mFinished]++;
+                }
+            }
         }
 
         $summary = array(
-            'total' => $totalCount > 0 ? $totalCount : 70,
-            'aktif' => $aktifCount > 0 ? $aktifCount : 61,
-            'due_soon' => $dueSoonCount > 0 ? $dueSoonCount : 5,
-            'overdue' => $overdueCount > 0 ? $overdueCount : 4
+            'total'    => $totalCount,
+            'aktif'    => $aktifCount,
+            'due_soon' => $dueSoonCount,
+            'overdue'  => $overdueCount
         );
 
         $chartData = array(
@@ -148,7 +178,9 @@ class Kalibrasi extends CI_Controller {
             'title' => 'E-Calibration | Data Instrumen',
             'instrumen' => $instrumenList,
             'summary' => $summary,
-            'chartData' => $chartData
+            'chartData' => $chartData,
+            'selectedYear' => $selectedYear,
+            'availableYears' => $availableYears
         );
         $this->load->view('layout/header', $data);
         $this->load->view('kalibrasi/index', $data);
