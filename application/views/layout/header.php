@@ -44,6 +44,25 @@
             font-weight: 500;
             padding: 0.5rem 1rem;
         }
+        .form-select, .form-control {
+            border-radius: 10px;
+            border: 1px solid #dbe2ea;
+            background-color: #f8fafc;
+            font-weight: 500;
+            color: #1e293b;
+            padding: 0.55rem 0.9rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+        .form-select:hover, .form-control:hover {
+            border-color: #cbd5e1;
+            background-color: #ffffff;
+        }
+        .form-select:focus, .form-control:focus {
+            border-color: #3b5998;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.12);
+        }
         ::placeholder,
         ::-webkit-input-placeholder,
         :-ms-input-placeholder {

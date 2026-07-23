@@ -223,9 +223,32 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label class="form-label text-dark fw-medium">Keterangan</label>
                             <textarea class="form-control" name="keterangan" rows="2"><?= esc($instrumen->keterangan ?? '') ?></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-dark fw-medium mb-1">Kondisi Alat <span class="text-danger">*</span></label>
+                            <div class="p-1 border rounded-3 d-flex gap-2" style="background-color: #f8fafc;">
+                                <div class="flex-fill">
+                                    <input type="radio" class="btn-check" name="kondisi" id="kondisi_edit_baik_int" value="baik" <?= (empty($instrumen->kondisi) || strtolower($instrumen->kondisi) === 'baik') ? 'checked' : '' ?> required>
+                                    <label class="btn btn-outline-success border-0 w-100 py-2 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-1" for="kondisi_edit_baik_int" style="font-size: 0.88rem;">
+                                        <i class="bi bi-check-circle-fill"></i> Baik
+                                    </label>
+                                </div>
+                                <div class="flex-fill">
+                                    <input type="radio" class="btn-check" name="kondisi" id="kondisi_edit_rusak_int" value="rusak" <?= (!empty($instrumen->kondisi) && strtolower($instrumen->kondisi) === 'rusak') ? 'checked' : '' ?>>
+                                    <label class="btn btn-outline-danger border-0 w-100 py-2 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-1" for="kondisi_edit_rusak_int" style="font-size: 0.88rem;">
+                                        <i class="bi bi-x-circle-fill"></i> Rusak
+                                    </label>
+                                </div>
+                                <div class="flex-fill">
+                                    <input type="radio" class="btn-check" name="kondisi" id="kondisi_edit_perbaikan_int" value="perbaikan" <?= (!empty($instrumen->kondisi) && strtolower($instrumen->kondisi) === 'perbaikan') ? 'checked' : '' ?>>
+                                    <label class="btn btn-outline-warning border-0 w-100 py-2 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-1" for="kondisi_edit_perbaikan_int" style="font-size: 0.88rem;">
+                                        <i class="bi bi-tools"></i> Perbaikan
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="col-12">

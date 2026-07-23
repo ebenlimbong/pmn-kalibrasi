@@ -35,7 +35,21 @@
                         <dd class="col-sm-12 text-muted mb-2"><?= !empty($instrumen->tanggal_mulai_digunakan) ? date('d-m-Y', strtotime($instrumen->tanggal_mulai_digunakan)) : '-' ?></dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Umur Instrumen</dt>
-                        <dd class="col-sm-12 text-muted mb-3"><span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 fw-medium" style="font-size: 0.78rem; background-color: #f8f9fa !important; border-color: #dee2e6 !important;"><i class="bi bi-clock-history me-1 opacity-75"></i><?= esc(hitung_umur_instrumen($instrumen->tanggal_mulai_digunakan ?? '')) ?></span></dd>
+                        <dd class="col-sm-12 text-muted mb-2"><span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 fw-medium" style="font-size: 0.78rem; background-color: #f8f9fa !important; border-color: #dee2e6 !important;"><i class="bi bi-clock-history me-1 opacity-75"></i><?= esc(hitung_umur_instrumen($instrumen->tanggal_mulai_digunakan ?? '')) ?></span></dd>
+                        
+                        <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Kondisi Alat</dt>
+                        <dd class="col-sm-12 text-muted mb-3">
+                            <?php
+                                $kondisiVal = strtolower($instrumen->kondisi ?? 'baik');
+                                if ($kondisiVal === 'rusak') {
+                                    echo '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold"><i class="bi bi-x-circle-fill me-1"></i> Rusak</span>';
+                                } else if ($kondisiVal === 'perbaikan') {
+                                    echo '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold"><i class="bi bi-tools me-1"></i> Dalam Perbaikan</span>';
+                                } else {
+                                    echo '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Baik</span>';
+                                }
+                            ?>
+                        </dd>
                         
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-1" style="font-size: 0.85rem; border-bottom: 1px solid #eee; padding-bottom: 4px;">Spesifikasi</dt>
                         <dd class="col-sm-12 text-muted mb-3">
@@ -114,25 +128,15 @@
                                         <td><?= esc($r->tanggal_terakhir) ?></td>
                                         <td><?= esc($r->badan_kalibrasi ?? '-') ?></td>
                                         <td><?= esc($r->nomor_sertifikat ?? '-') ?></td>
-                                        <td>
-                                            <?php
-                                                $nextDate = strtotime($r->tanggal_berikutnya);
-                                                $today = time();
-                                                $diff = ($nextDate - $today) / (60 * 60 * 24);
-                                                
-                                                $statusText = 'Aktif';
-                                                $textClass = 'text-success';
-                                                if ($diff <= 0) {
-                                                    $statusText = 'Tidak aktif';
-                                                    $textClass = 'text-danger';
-                                                }
-                                            ?>
-                                            <?= esc($r->tanggal_berikutnya) ?>
-                                        </td>
+                                        <td><?= esc($r->tanggal_berikutnya) ?></td>
                                         <td><?= esc($r->batas_penerimaan ?? '-') ?></td>
                                         <td><?= esc($r->keterangan ?? '-') ?></td>
                                         <td class="text-center">
-                                            <span class="<?= $textClass ?> fw-bold"><?= esc($statusText) ?></span>
+                                            <?php
+                                                $stText = (isset($r->status) && $r->status === 'Aktif') ? 'Aktif' : 'Tidak aktif';
+                                                $stClass = (isset($r->status) && $r->status === 'Aktif') ? 'text-success' : 'text-danger';
+                                            ?>
+                                            <span class="<?= $stClass ?> fw-bold"><?= esc($stText) ?></span>
                                         </td>
                                         <td class="text-center">
                                             <?php if(!empty($r->file_sertifikat)): ?>
