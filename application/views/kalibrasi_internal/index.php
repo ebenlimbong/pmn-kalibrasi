@@ -97,7 +97,7 @@
     </div>
 </div>
 
-<!-- CHARTS SECTION (MATCHING GAMBAR 1 FROM MENTOR) -->
+<!-- CHARTS ROW 1 (MATCHING GAMBAR 1 FROM MENTOR) -->
 <div class="row g-3 mb-4">
     <!-- Chart 1: Yearly Maintenance Execution Curve -->
     <div class="col-12 col-lg-7">
@@ -121,6 +121,35 @@
             </div>
             <div class="card-body p-3">
                 <div id="yearlyNotFinishedChartInternal" style="min-height: 240px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHARTS ROW 2 (STATUS POPULASI & BREAKDOWN PER KATEGORI ALAT) -->
+<div class="row g-3 mb-4">
+    <!-- Chart 3: Status Populasi Instrumen (Donut Chart) -->
+    <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-dark mb-0">Status Populasi Instrumen</h6>
+                <span class="badge bg-light text-secondary border">Overview</span>
+            </div>
+            <div class="card-body p-3 d-flex align-items-center justify-content-center">
+                <div id="statusPopulasiChartInternal" style="width: 100%; min-height: 240px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 4: Breakdown Status per Jenis/Kategori Alat (Horizontal Stacked Bar) -->
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-dark mb-0">Breakdown Status per Jenis Alat</h6>
+                <span class="badge bg-light text-secondary border">Kategori Alat</span>
+            </div>
+            <div class="card-body p-3">
+                <div id="breakdownJenisAlatChartInternal" style="min-height: 240px;"></div>
             </div>
         </div>
     </div>
@@ -392,6 +421,91 @@ window.addEventListener('DOMContentLoaded', function() {
     };
     var barChart = new ApexCharts(document.querySelector("#yearlyNotFinishedChartInternal"), barOptions);
     barChart.render();
+
+    // Chart 3: Status Populasi Instrumen (Donut Chart)
+    var donutOptions = {
+        series: [<?= (int)($summary['aktif'] ?? 0) ?>, <?= (int)($summary['due_soon'] ?? 0) ?>, <?= (int)($summary['overdue'] ?? 0) ?>],
+        chart: {
+            type: 'donut',
+            height: 240
+        },
+        labels: ['In-Cal (Aktif)', 'Due Soon', 'Overdue'],
+        colors: ['#2ecc71', '#f1c40f', '#e74c3c'],
+        legend: { position: 'right' },
+        dataLabels: { enabled: true },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Unit',
+                            formatter: function () {
+                                return '<?= (int)($summary['total'] ?? 0) ?> Unit';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+    var donutChart = new ApexCharts(document.querySelector("#statusPopulasiChartInternal"), donutOptions);
+    donutChart.render();
+
+    // Chart 4: Breakdown Status per Jenis/Kategori Alat (Horizontal Stacked Bar)
+    var katCategories = <?= json_encode(!empty($chartData['kat_categories']) ? $chartData['kat_categories'] : array('Pressure Gauge', 'Pressure Switch', 'RTD', 'Multimeter', 'Transducer', 'Thermometer')) ?>;
+    var katInCal = <?= json_encode(!empty($chartData['kat_in_cal']) ? $chartData['kat_in_cal'] : array(14, 10, 8, 12, 9, 6)) ?>;
+    var katDueSoon = <?= json_encode(!empty($chartData['kat_due_soon']) ? $chartData['kat_due_soon'] : array(2, 1, 1, 1, 0, 1)) ?>;
+    var katOverdue = <?= json_encode(!empty($chartData['kat_overdue']) ? $chartData['kat_overdue'] : array(1, 1, 0, 1, 1, 0)) ?>;
+
+    var horizBarOptions = {
+        series: [{
+            name: 'In-Cal (Aktif)',
+            data: katInCal
+        }, {
+            name: 'Due Soon',
+            data: katDueSoon
+        }, {
+            name: 'Overdue',
+            data: katOverdue
+        }],
+        chart: {
+            type: 'bar',
+            height: 250,
+            stacked: true,
+            toolbar: { show: false }
+        },
+        colors: ['#2ecc71', '#f1c40f', '#e74c3c'],
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                barHeight: '55%',
+                borderRadius: 4,
+                dataLabels: {
+                    total: {
+                        enabled: true,
+                        style: {
+                            fontSize: '11px',
+                            fontWeight: 700
+                        }
+                    }
+                }
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            style: {
+                fontSize: '10px',
+                colors: ['#ffffff']
+            }
+        },
+        xaxis: { categories: katCategories },
+        legend: { position: 'bottom' },
+        fill: { opacity: 1 }
+    };
+    var horizBarChart = new ApexCharts(document.querySelector("#breakdownJenisAlatChartInternal"), horizBarOptions);
+    horizBarChart.render();
 });
 </script>
-
