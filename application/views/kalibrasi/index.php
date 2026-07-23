@@ -104,7 +104,14 @@
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
                 <h6 class="fw-bold text-dark mb-0">Yearly Maintenance Execution Curve</h6>
-                <span class="badge bg-light text-secondary border">2026</span>
+                <div class="d-flex align-items-center gap-2">
+                    <label for="selectTahun" class="form-label mb-0 text-muted fw-semibold" style="font-size: 0.78rem;">Tahun:</label>
+                    <select id="selectTahun" class="form-select form-select-sm shadow-sm border" style="width: 95px; font-size: 0.82rem; font-weight: 600;" onchange="location.href='?tahun=' + this.value;">
+                        <?php foreach ($availableYears as $y): ?>
+                            <option value="<?= $y ?>" <?= $y == $selectedYear ? 'selected' : '' ?>><?= $y ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
             <div class="card-body p-3">
                 <div id="yearlyExecutionCurve" style="min-height: 240px;"></div>
@@ -385,11 +392,20 @@ window.addEventListener('DOMContentLoaded', function() {
             toolbar: { show: true },
             zoom: { enabled: false }
         },
-        colors: ['#e74c3c', '#3498db'],
+        colors: ['#2ecc71', '#3498db'],
         dataLabels: { enabled: false },
         stroke: { curve: 'smooth', width: 3 },
         xaxis: {
             categories: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+        },
+        yaxis: {
+            forceNiceScale: true,
+            decimalsInFloat: 0,
+            labels: {
+                formatter: function (val) {
+                    return Math.round(val);
+                }
+            }
         },
         legend: { position: 'bottom' },
         grid: { borderColor: '#f1f1f1' }
