@@ -174,12 +174,12 @@
         </div>
     </div>
 
-    <!-- Chart 2: Grafik Status Kalibrasi per Seksi -->
+    <!-- Chart 2: Grafik Kondisi Alat per Kategori -->
     <div class="col-12 col-lg-5">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold text-dark mb-0">Grafik Status Kalibrasi per Seksi</h6>
-                <span class="badge bg-light text-secondary border">Per Seksi</span>
+                <h6 class="fw-bold text-dark mb-0">Grafik Kondisi Alat per Kategori</h6>
+                <span class="badge bg-light text-secondary border">Kondisi Alat</span>
             </div>
             <div class="card-body p-3">
                 <div id="yearlyNotFinishedChart" style="min-height: 240px;"></div>
@@ -267,7 +267,7 @@
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Standar Batas</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Kondisi</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Keterangan</th>
-                        <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Status</th>
+                        <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Status Kalibrasi</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Aksi</th>
                     </tr>
                     <tr>
@@ -327,28 +327,18 @@
                                 <td class="text-start"><?= esc($item->keterangan ?? '-') ?></td>
                                 <td>
                                     <?php
-                                        $kondisiVal = strtolower($item->kondisi ?? 'baik');
-                                        if ($kondisiVal === 'rusak') {
-                                            $statusText = 'Rusak';
-                                            $textClass = 'text-danger';
-                                        } else if ($kondisiVal === 'perbaikan') {
-                                            $statusText = 'Perbaikan';
-                                            $textClass = 'text-warning';
+                                        if (empty($item->tanggal_terakhir)) {
+                                            $statusText = 'Belum dikalibrasi';
+                                            $badgeClass = 'badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold';
+                                        } else if (!empty($item->tanggal_berikutnya) && strtotime($item->tanggal_berikutnya) < time()) {
+                                            $statusText = 'Tidak aktif';
+                                            $badgeClass = 'badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold';
                                         } else {
                                             $statusText = 'Aktif';
-                                            $textClass = 'text-success';
-                                            if (empty($item->tanggal_terakhir)) {
-                                                $statusText = 'Belum dikalibrasi';
-                                                $textClass = 'text-warning';
-                                            } else {
-                                                if (!empty($item->tanggal_berikutnya) && strtotime($item->tanggal_berikutnya) < time()) {
-                                                    $statusText = 'Tidak aktif';
-                                                    $textClass = 'text-danger';
-                                                }
-                                            }
+                                            $badgeClass = 'badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold';
                                         }
                                     ?>
-                                    <span class="<?= $textClass ?> fw-bold"><?= esc($statusText) ?></span>
+                                    <span class="<?= $badgeClass ?>" style="font-size: 0.78rem;"><?= esc($statusText) ?></span>
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
@@ -456,10 +446,10 @@ window.addEventListener('DOMContentLoaded', function() {
     var targetData = <?= json_encode($chartData['target_monthly'] ?? array_fill(0,12,0)) ?>;
     var finishedData = <?= json_encode($chartData['finished_monthly'] ?? array_fill(0,12,0)) ?>;
     
-    var seksiCategories = <?= json_encode(!empty($chartData['seksi_categories']) ? $chartData['seksi_categories'] : array('QC Lab', 'Maintenance', 'Bengkel')) ?>;
-    var seksiAktif = <?= json_encode(!empty($chartData['seksi_aktif']) ? $chartData['seksi_aktif'] : array(0, 0, 0)) ?>;
-    var seksiTidakAktif = <?= json_encode(!empty($chartData['seksi_tidak_aktif']) ? $chartData['seksi_tidak_aktif'] : array(0, 0, 0)) ?>;
-    var seksiBelumKalibrasi = <?= json_encode(!empty($chartData['seksi_belum_kalibrasi']) ? $chartData['seksi_belum_kalibrasi'] : array(0, 0, 0)) ?>;
+    var kondisiKatCategories = <?= json_encode(!empty($chartData['kondisi_kat_categories']) ? $chartData['kondisi_kat_categories'] : array('Pressure Gauge', 'Pressure Switch', 'RTD')) ?>;
+    var kondisiKatBaik = <?= json_encode(!empty($chartData['kondisi_kat_baik']) ? $chartData['kondisi_kat_baik'] : array(0, 0, 0)) ?>;
+    var kondisiKatRusak = <?= json_encode(!empty($chartData['kondisi_kat_rusak']) ? $chartData['kondisi_kat_rusak'] : array(0, 0, 0)) ?>;
+    var kondisiKatPerbaikan = <?= json_encode(!empty($chartData['kondisi_kat_perbaikan']) ? $chartData['kondisi_kat_perbaikan'] : array(0, 0, 0)) ?>;
 
     var curveOptions = {
         series: [{
@@ -498,14 +488,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
     var barOptions = {
         series: [{
-            name: 'Aktif',
-            data: seksiAktif
+            name: 'Baik',
+            data: kondisiKatBaik
         }, {
-            name: 'Tidak Aktif',
-            data: seksiTidakAktif
+            name: 'Rusak',
+            data: kondisiKatRusak
         }, {
-            name: 'Belum Dikalibrasi',
-            data: seksiBelumKalibrasi
+            name: 'Perbaikan',
+            data: kondisiKatPerbaikan
         }],
         chart: {
             type: 'bar',
@@ -521,7 +511,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 borderRadius: 4
             }
         },
-        xaxis: { categories: seksiCategories },
+        xaxis: { categories: kondisiKatCategories },
         legend: { position: 'bottom' },
         fill: { opacity: 1 }
     };

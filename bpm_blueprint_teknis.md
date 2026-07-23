@@ -106,7 +106,7 @@ flowchart TD
     A[Mulai] --> B[Sistem Mengambil Data Master & Riwayat Terbaru]
     B --> C[Hitung Stat Cards: Total, Dikalibrasi, Jatuh Tempo bulan ini, Rusak]
     C --> D[Render Kurva Pelaksanaan Kalibrasi Tahunan]
-    C --> E[Render Grafik Status Kalibrasi per Seksi]
+    C --> E[Render Grafik Kondisi Alat per Kategori]
     C --> F[Render Status Populasi Instrumen - Pie Chart]
     C --> G[Render Breakdown Status per Jenis Alat]
     D & E & F & G --> H[Selesai]
@@ -116,9 +116,9 @@ flowchart TD
 | :--- | :--- |
 | **Overview Cards** | - **Total Instrumen**: Menghitung seluruh unit instrumen terdaftar.<br>- **Dikalibrasi**: Menghitung alat dengan kalibrasi aktif (`tanggal_berikutnya >= hari ini`).<br>- **Jatuh Tempo bulan ini**: Menghitung alat yang jatuh tempo dalam 30 hari ke depan.<br>- **Rusak**: Menghitung alat dengan status kondisi `rusak`. |
 | **Kurva Pelaksanaan** | Grafik *line chart* yang membandingkan target kalibrasi per bulan dengan realisasi kalibrasi (*Selesai Dikalibrasi*) pada tahun yang dipilih. |
-| **Status per Seksi** | Stacked bar chart yang menampilkan status alat per seksi pemakai (`Aktif`, `Tidak Aktif`, `Belum Dikalibrasi`). |
+| **Kondisi per Kategori** | Stacked bar chart yang menampilkan statistik kondisi fisik/operasional alat per kategori (`Baik` 🟢, `Rusak` 🔴, `Perbaikan` 🟡). |
 | **Status Populasi (Pie)**| Donut chart yang memvisualisasikan proporsi instrumen (`Dikalibrasi` 🟢, `Akan Expired` 🟡, `Tidak Aktif` 🔴). |
-| **Breakdown Jenis Alat**| Stacked horizontal bar chart yang menampilkan rincian kondisi per kategori instrumen. |
+| **Breakdown Jenis Alat**| Stacked horizontal bar chart yang menampilkan rincian status kalibrasi per kategori instrumen (`Dikalibrasi`, `Akan Expired`, `Tidak Aktif`). |
 
 ---
 

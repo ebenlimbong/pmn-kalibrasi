@@ -75,7 +75,7 @@ class KalibrasiInternal extends CI_Controller
 
         $targetMonthly = array_fill(1, 12, 0);
         $finishedMonthly = array_fill(1, 12, 0);
-        $seksiStats = array();
+        $kondisiKatStats = array();
         $katStats = array();
 
         foreach ($instrumenList as $item) {
@@ -85,17 +85,19 @@ class KalibrasiInternal extends CI_Controller
                 $item->tahun_sertifikasi_berikutnya = $year + (int) $item->periode_kalibrasi;
             }
 
-            $isRusak = (!empty($item->kondisi) && strtolower($item->kondisi) === 'rusak');
-            if ($isRusak) {
+            // Kondisi count (independent of calibration status)
+            $kondisiLower = !empty($item->kondisi) ? strtolower($item->kondisi) : 'baik';
+            if ($kondisiLower === 'rusak') {
                 $rusakCount++;
             }
 
-            $isOverdue = false;
-            if (empty($item->tanggal_terakhir) || empty($item->tanggal_berikutnya) || $item->tanggal_berikutnya < $today || $isRusak) {
-                $isOverdue = true;
+            // Calibration Status (independent of condition)
+            $isOverdueCal = false;
+            if (empty($item->tanggal_terakhir) || empty($item->tanggal_berikutnya) || $item->tanggal_berikutnya < $today) {
+                $isOverdueCal = true;
             }
 
-            if ($isOverdue) {
+            if ($isOverdueCal) {
                 $overdueCalCount++;
             } else {
                 $aktifCount++;
@@ -112,30 +114,29 @@ class KalibrasiInternal extends CI_Controller
                 }
             }
 
-            $seksi = !empty($item->seksi_pemakai) ? $item->seksi_pemakai : 'Bengkel';
-            if (!isset($seksiStats[$seksi])) {
-                $seksiStats[$seksi] = array('aktif' => 0, 'tidak_aktif' => 0, 'belum_dikalibrasi' => 0);
+            // Chart 2: Grafik Kondisi Alat per Kategori
+            $kat = !empty($item->kategori_alat) ? $item->kategori_alat : 'Lainnya';
+            if (!isset($kondisiKatStats[$kat])) {
+                $kondisiKatStats[$kat] = array('baik' => 0, 'rusak' => 0, 'perbaikan' => 0);
             }
-            if (empty($item->tanggal_terakhir)) {
-                $seksiStats[$seksi]['belum_dikalibrasi']++;
-            } else if ($isOverdue) {
-                $seksiStats[$seksi]['tidak_aktif']++;
+            if ($kondisiLower === 'rusak') {
+                $kondisiKatStats[$kat]['rusak']++;
+            } else if ($kondisiLower === 'perbaikan') {
+                $kondisiKatStats[$kat]['perbaikan']++;
             } else {
-                $seksiStats[$seksi]['aktif']++;
+                $kondisiKatStats[$kat]['baik']++;
             }
 
-            $kat = !empty($item->kategori_alat) ? $item->kategori_alat : '';
-            if (!empty($kat)) {
-                if (!isset($katStats[$kat])) {
-                    $katStats[$kat] = array('in_cal' => 0, 'due_soon' => 0, 'overdue' => 0);
-                }
-                if ($isOverdue) {
-                    $katStats[$kat]['overdue']++;
-                } else if ($item->tanggal_berikutnya <= $in30days) {
-                    $katStats[$kat]['due_soon']++;
-                } else {
-                    $katStats[$kat]['in_cal']++;
-                }
+            // Chart 4: Breakdown Status Kalibrasi per Kategori
+            if (!isset($katStats[$kat])) {
+                $katStats[$kat] = array('in_cal' => 0, 'due_soon' => 0, 'overdue' => 0);
+            }
+            if ($isOverdueCal) {
+                $katStats[$kat]['overdue']++;
+            } else if ($item->tanggal_berikutnya <= $in30days) {
+                $katStats[$kat]['due_soon']++;
+            } else {
+                $katStats[$kat]['in_cal']++;
             }
         }
 
@@ -182,10 +183,10 @@ class KalibrasiInternal extends CI_Controller
         $chartData = array(
             'target_monthly' => array_values($targetMonthly),
             'finished_monthly' => array_values($finishedMonthly),
-            'seksi_categories' => array_keys($seksiStats),
-            'seksi_aktif' => array_column($seksiStats, 'aktif'),
-            'seksi_tidak_aktif' => array_column($seksiStats, 'tidak_aktif'),
-            'seksi_belum_kalibrasi' => array_column($seksiStats, 'belum_dikalibrasi'),
+            'kondisi_kat_categories' => array_keys($kondisiKatStats),
+            'kondisi_kat_baik' => array_column($kondisiKatStats, 'baik'),
+            'kondisi_kat_rusak' => array_column($kondisiKatStats, 'rusak'),
+            'kondisi_kat_perbaikan' => array_column($kondisiKatStats, 'perbaikan'),
             'kat_categories' => array_keys($katStats),
             'kat_in_cal' => array_column($katStats, 'in_cal'),
             'kat_due_soon' => array_column($katStats, 'due_soon'),
