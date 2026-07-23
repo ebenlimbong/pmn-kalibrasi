@@ -25,13 +25,24 @@
 }
 </style>
 
-<div class="mb-4 mt-3">
-    <h6 class="text-uppercase fw-bold text-secondary mb-3" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
-    <div class="kalibrasi-tabs shadow-sm">
-        <a href="<?= base_url('kalibrasi') ?>" class="kalibrasi-tab active">Eksternal</a>
-        <a href="<?= base_url('kalibrasi-internal') ?>" class="kalibrasi-tab">Internal</a>
+<div class="d-flex flex-wrap align-items-center justify-content-between mb-4 mt-3 gap-3">
+    <div>
+        <h6 class="text-uppercase fw-bold text-secondary mb-2" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
+        <div class="d-flex flex-wrap gap-3 align-items-center">
+            <div class="kalibrasi-tabs shadow-sm">
+                <a href="<?= base_url('kalibrasi') ?>" class="kalibrasi-tab active">Eksternal</a>
+                <a href="<?= base_url('kalibrasi-internal') ?>" class="kalibrasi-tab">Internal</a>
+            </div>
+            <div class="kalibrasi-tabs shadow-sm">
+                <button type="button" id="btn-view-dashboard" class="kalibrasi-tab active border-0" onclick="switchViewMode('dashboard')">Dashboard Overview</button>
+                <button type="button" id="btn-view-data" class="kalibrasi-tab border-0" onclick="switchViewMode('data')">Data Instrumen</button>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- SECTION 1: DASHBOARD OVERVIEW -->
+<div id="section-dashboard-view">
 
 <!-- 4 OVERVIEW CARDS (BOOTSTRAP SIMPLE CARDS) -->
 <div class="row g-3 mb-4">
@@ -160,7 +171,10 @@
             </div>
         </div>
     </div>
-</div>
+</div> <!-- END #section-dashboard-view -->
+
+<!-- SECTION 2: DATA INSTRUMEN TABLE -->
+<div id="section-data-view" style="display: none;">
 
 <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-4">
@@ -292,6 +306,7 @@
         </table>
     </div>
 </div>
+</div> <!-- END #section-data-view -->
 
 <style>
     @media (max-width: 767.98px) {
@@ -527,5 +542,35 @@ window.addEventListener('DOMContentLoaded', function() {
     };
     var horizBarChart = new ApexCharts(document.querySelector("#breakdownJenisAlatChart"), horizBarOptions);
     horizBarChart.render();
+});
+
+function switchViewMode(mode) {
+    if (mode === 'data') {
+        $('#section-dashboard-view').hide();
+        $('#section-data-view').fadeIn(150);
+        $('#btn-view-dashboard').removeClass('active');
+        $('#btn-view-data').addClass('active');
+        if ($.fn.DataTable.isDataTable('#tabelInstrumen')) {
+            $('#tabelInstrumen').DataTable().columns.adjust();
+        }
+        const url = new URL(window.location);
+        url.searchParams.set('tab', 'data');
+        window.history.replaceState({}, '', url);
+    } else {
+        $('#section-data-view').hide();
+        $('#section-dashboard-view').fadeIn(150);
+        $('#btn-view-data').removeClass('active');
+        $('#btn-view-dashboard').addClass('active');
+        const url = new URL(window.location);
+        url.searchParams.set('tab', 'dashboard');
+        window.history.replaceState({}, '', url);
+    }
+}
+
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'data' || urlParams.get('view') === 'data') {
+        switchViewMode('data');
+    }
 });
 </script>
