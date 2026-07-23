@@ -20,7 +20,8 @@ class RiwayatKalibrasiInternal_model extends CI_Model {
 
     public function get_by_nomor($nomor_identifikasi) {
         $this->db->where('nomor_identifikasi', $nomor_identifikasi);
-        $this->db->order_by('tanggal_terakhir', 'ASC');
+        $this->db->order_by('tanggal_terakhir', 'DESC');
+        $this->db->order_by('id', 'DESC');
         return $this->db->get($this->table)->result();
     }
 

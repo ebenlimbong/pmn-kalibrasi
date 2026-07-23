@@ -23,14 +23,19 @@ class MasterInstrumen_model extends CI_Model {
     }
 
     public function getInstrumenWithLatestKalibrasi() {
-        $this->db->select('master_instrumen.*, latest_riwayat.tanggal_terakhir, latest_riwayat.nomor_sertifikat, latest_riwayat.badan_kalibrasi, latest_riwayat.file_sertifikat, latest_riwayat.tanggal_berikutnya');
+        $this->db->select('master_instrumen.*, latest_riwayat.tanggal_terakhir, latest_riwayat.nomor_sertifikat, latest_riwayat.badan_kalibrasi, latest_riwayat.file_sertifikat, latest_riwayat.tanggal_berikutnya, latest_riwayat.status as status_riwayat');
         $subquery = '(
             SELECT r1.* 
             FROM riwayat_kalibrasi r1 
             INNER JOIN (
-                SELECT nomor_identifikasi, MAX(id) as max_id 
-                FROM riwayat_kalibrasi 
-                GROUP BY nomor_identifikasi
+                SELECT r_inner.nomor_identifikasi, MAX(r_inner.id) AS max_id
+                FROM riwayat_kalibrasi r_inner
+                INNER JOIN (
+                    SELECT nomor_identifikasi, MAX(tanggal_terakhir) AS max_tgl
+                    FROM riwayat_kalibrasi
+                    GROUP BY nomor_identifikasi
+                ) r_max ON r_inner.nomor_identifikasi = r_max.nomor_identifikasi AND r_inner.tanggal_terakhir = r_max.max_tgl
+                GROUP BY r_inner.nomor_identifikasi
             ) r2 ON r1.id = r2.max_id
         ) latest_riwayat';
         $this->db->join($subquery, 'master_instrumen.nomor_identifikasi = latest_riwayat.nomor_identifikasi', 'left');
