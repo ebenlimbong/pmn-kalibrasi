@@ -43,6 +43,7 @@ class KalibrasiInternal extends CI_Controller {
         $targetMonthly = array_fill(1, 12, 0);
         $finishedMonthly = array_fill(1, 12, 0);
         $seksiStats = array();
+        $katStats = array();
 
         foreach ($instrumenList as $item) {
             $item->tahun_sertifikasi_berikutnya = '-';
@@ -81,6 +82,24 @@ class KalibrasiInternal extends CI_Controller {
             } else {
                 $seksiStats[$seksi]['continued']++;
             }
+
+            $kat = !empty($item->kategori_alat) ? $item->kategori_alat : '';
+            if (!empty($kat)) {
+                if (!isset($katStats[$kat])) {
+                    $katStats[$kat] = array('in_cal' => 0, 'due_soon' => 0, 'overdue' => 0);
+                }
+                if (!empty($item->tanggal_berikutnya)) {
+                    if ($item->tanggal_berikutnya < $today) {
+                        $katStats[$kat]['overdue']++;
+                    } else if ($item->tanggal_berikutnya <= $in30days) {
+                        $katStats[$kat]['due_soon']++;
+                    } else {
+                        $katStats[$kat]['in_cal']++;
+                    }
+                } else {
+                    $katStats[$kat]['overdue']++;
+                }
+            }
         }
 
         // Fallback demo data matching mentor's sample if actual counts are low
@@ -95,19 +114,34 @@ class KalibrasiInternal extends CI_Controller {
             );
         }
 
+        if (empty($katStats) || count($katStats) <= 1) {
+            $katStats = array(
+                'Pressure Gauge' => array('in_cal' => 14, 'due_soon' => 2, 'overdue' => 1),
+                'Pressure Switch' => array('in_cal' => 10, 'due_soon' => 1, 'overdue' => 1),
+                'RTD (Temperature)' => array('in_cal' => 8, 'due_soon' => 1, 'overdue' => 0),
+                'Multimeter' => array('in_cal' => 12, 'due_soon' => 1, 'overdue' => 1),
+                'Transducer / Transmitter' => array('in_cal' => 9, 'due_soon' => 0, 'overdue' => 1),
+                'Thermometer' => array('in_cal' => 6, 'due_soon' => 1, 'overdue' => 0)
+            );
+        }
+
         $summary = array(
-            'total' => $totalCount > 0 ? $totalCount : 28,
-            'aktif' => $aktifCount > 0 ? $aktifCount : 26,
-            'due_soon' => $dueSoonCount > 0 ? $dueSoonCount : 2,
-            'overdue' => $overdueCount > 0 ? $overdueCount : 2
+            'total' => $totalCount > 0 ? $totalCount : 70,
+            'aktif' => $aktifCount > 0 ? $aktifCount : 61,
+            'due_soon' => $dueSoonCount > 0 ? $dueSoonCount : 5,
+            'overdue' => $overdueCount > 0 ? $overdueCount : 4
         );
 
         $chartData = array(
-            'target_monthly' => array_values($targetMonthly),
+            'target_monthly'   => array_values($targetMonthly),
             'finished_monthly' => array_values($finishedMonthly),
             'seksi_categories' => array_keys($seksiStats),
-            'seksi_postponed' => array_column($seksiStats, 'postponed'),
-            'seksi_continued' => array_column($seksiStats, 'continued')
+            'seksi_postponed'  => array_column($seksiStats, 'postponed'),
+            'seksi_continued'  => array_column($seksiStats, 'continued'),
+            'kat_categories'   => array_keys($katStats),
+            'kat_in_cal'       => array_column($katStats, 'in_cal'),
+            'kat_due_soon'     => array_column($katStats, 'due_soon'),
+            'kat_overdue'      => array_column($katStats, 'overdue')
         );
 
         $data = array(
@@ -420,4 +454,3 @@ class KalibrasiInternal extends CI_Controller {
             )));
     }
 }
-
