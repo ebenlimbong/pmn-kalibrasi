@@ -62,7 +62,8 @@ class Kalibrasi extends CI_Controller {
         $totalCount = count($instrumenList);
         $aktifCount = 0;
         $dueSoonCount = 0;
-        $overdueCount = 0;
+        $rusakCount = 0;
+        $overdueCalCount = 0;
 
         $targetMonthly = array_fill(1, 12, 0);
         $finishedMonthly = array_fill(1, 12, 0);
@@ -76,33 +77,43 @@ class Kalibrasi extends CI_Controller {
                 $item->tahun_sertifikasi_berikutnya = $year + (int)$item->periode_kalibrasi;
             }
 
-            if (!empty($item->tanggal_berikutnya)) {
-                if ($item->tanggal_berikutnya < $today) {
-                    $overdueCount++;
-                } else if ($item->tanggal_berikutnya <= $in30days) {
-                    $dueSoonCount++;
-                    $aktifCount++;
-                } else {
-                    $aktifCount++;
-                }
+            $isRusak = (!empty($item->kondisi) && strtolower($item->kondisi) === 'rusak');
+            if ($isRusak) {
+                $rusakCount++;
+            }
 
+            $isOverdue = false;
+            if (empty($item->tanggal_terakhir) || empty($item->tanggal_berikutnya) || $item->tanggal_berikutnya < $today || $isRusak) {
+                $isOverdue = true;
+            }
+
+            if ($isOverdue) {
+                $overdueCalCount++;
+            } else {
+                $aktifCount++;
+                if ($item->tanggal_berikutnya <= $in30days) {
+                    $dueSoonCount++;
+                }
+            }
+
+            if (!empty($item->tanggal_berikutnya)) {
                 // Count target for selected year only
                 if ((int)date('Y', strtotime($item->tanggal_berikutnya)) === $selectedYear) {
                     $mTarget = (int) date('n', strtotime($item->tanggal_berikutnya));
                     $targetMonthly[$mTarget]++;
                 }
-            } else {
-                $overdueCount++;
             }
 
             $seksi = !empty($item->seksi_pemakai) ? $item->seksi_pemakai : 'QC Lab';
             if (!isset($seksiStats[$seksi])) {
-                $seksiStats[$seksi] = array('postponed' => 0, 'continued' => 0);
+                $seksiStats[$seksi] = array('aktif' => 0, 'tidak_aktif' => 0, 'belum_dikalibrasi' => 0);
             }
-            if (!empty($item->tanggal_berikutnya) && $item->tanggal_berikutnya < $today) {
-                $seksiStats[$seksi]['postponed']++;
+            if (empty($item->tanggal_terakhir)) {
+                $seksiStats[$seksi]['belum_dikalibrasi']++;
+            } else if ($isOverdue) {
+                $seksiStats[$seksi]['tidak_aktif']++;
             } else {
-                $seksiStats[$seksi]['continued']++;
+                $seksiStats[$seksi]['aktif']++;
             }
 
             $kat = !empty($item->kategori_alat) ? $item->kategori_alat : '';
@@ -110,16 +121,12 @@ class Kalibrasi extends CI_Controller {
                 if (!isset($katStats[$kat])) {
                     $katStats[$kat] = array('in_cal' => 0, 'due_soon' => 0, 'overdue' => 0);
                 }
-                if (!empty($item->tanggal_berikutnya)) {
-                    if ($item->tanggal_berikutnya < $today) {
-                        $katStats[$kat]['overdue']++;
-                    } else if ($item->tanggal_berikutnya <= $in30days) {
-                        $katStats[$kat]['due_soon']++;
-                    } else {
-                        $katStats[$kat]['in_cal']++;
-                    }
-                } else {
+                if ($isOverdue) {
                     $katStats[$kat]['overdue']++;
+                } else if ($item->tanggal_berikutnya <= $in30days) {
+                    $katStats[$kat]['due_soon']++;
+                } else {
+                    $katStats[$kat]['in_cal']++;
                 }
             }
         }
@@ -156,22 +163,25 @@ class Kalibrasi extends CI_Controller {
         }
 
         $summary = array(
-            'total'    => $totalCount,
-            'aktif'    => $aktifCount,
-            'due_soon' => $dueSoonCount,
-            'overdue'  => $overdueCount
+            'total'            => $totalCount,
+            'aktif'            => $aktifCount,
+            'due_soon'         => $dueSoonCount,
+            'overdue'          => $rusakCount,
+            'overdue_populasi' => $overdueCalCount,
+            'in_cal_slice'     => max(0, $aktifCount - $dueSoonCount)
         );
 
         $chartData = array(
-            'target_monthly'   => array_values($targetMonthly),
-            'finished_monthly' => array_values($finishedMonthly),
-            'seksi_categories' => array_keys($seksiStats),
-            'seksi_postponed'  => array_column($seksiStats, 'postponed'),
-            'seksi_continued'  => array_column($seksiStats, 'continued'),
-            'kat_categories'   => array_keys($katStats),
-            'kat_in_cal'       => array_column($katStats, 'in_cal'),
-            'kat_due_soon'     => array_column($katStats, 'due_soon'),
-            'kat_overdue'      => array_column($katStats, 'overdue')
+            'target_monthly'         => array_values($targetMonthly),
+            'finished_monthly'       => array_values($finishedMonthly),
+            'seksi_categories'       => array_keys($seksiStats),
+            'seksi_aktif'            => array_column($seksiStats, 'aktif'),
+            'seksi_tidak_aktif'      => array_column($seksiStats, 'tidak_aktif'),
+            'seksi_belum_kalibrasi'  => array_column($seksiStats, 'belum_dikalibrasi'),
+            'kat_categories'         => array_keys($katStats),
+            'kat_in_cal'             => array_column($katStats, 'in_cal'),
+            'kat_due_soon'           => array_column($katStats, 'due_soon'),
+            'kat_overdue'            => array_column($katStats, 'overdue')
         );
 
         $data = array(
@@ -241,6 +251,7 @@ class Kalibrasi extends CI_Controller {
             'tanggal_mulai_digunakan' => $this->input->post('tanggal_mulai_digunakan'),
             'batas_penerimaan'   => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
             'keterangan'         => $this->input->post('keterangan'),
+            'kondisi'            => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
         );
 
         // Handle foto_alat upload
@@ -286,6 +297,7 @@ class Kalibrasi extends CI_Controller {
             }
 
             $this->RiwayatKalibrasi_model->insert($riwayatData);
+            $this->updateRiwayatStatus($nomorIdentifikasi);
         }
 
         $this->session->set_flashdata('success', 'Data instrumen berhasil ditambahkan.');
@@ -299,7 +311,7 @@ class Kalibrasi extends CI_Controller {
         }
 
         $riwayatList = $this->RiwayatKalibrasi_model->get_by_nomor($instrumen->nomor_identifikasi);
-        $latestRiwayat = !empty($riwayatList) ? end($riwayatList) : null;
+        $latestRiwayat = !empty($riwayatList) ? $riwayatList[0] : null;
 
         $data = array(
             'title' => 'Edit Instrumen',
@@ -331,6 +343,7 @@ class Kalibrasi extends CI_Controller {
             'tanggal_mulai_digunakan' => $this->input->post('tanggal_mulai_digunakan'),
             'batas_penerimaan'   => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
             'keterangan'         => $this->input->post('keterangan'),
+            'kondisi'            => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
         );
 
         // Handle foto upload
@@ -387,6 +400,7 @@ class Kalibrasi extends CI_Controller {
             } else {
                 $this->RiwayatKalibrasi_model->insert($riwayatData);
             }
+            $this->updateRiwayatStatus($updateData['nomor_identifikasi']);
         }
 
         $this->session->set_flashdata('success', 'Data instrumen berhasil diupdate.');
@@ -447,6 +461,7 @@ class Kalibrasi extends CI_Controller {
             }
 
             $this->RiwayatKalibrasi_model->insert($riwayatData);
+            $this->updateRiwayatStatus($instrumen->nomor_identifikasi);
         }
 
         $this->session->set_flashdata('success', 'Riwayat kalibrasi berhasil ditambahkan.');
@@ -462,10 +477,25 @@ class Kalibrasi extends CI_Controller {
             $this->RiwayatKalibrasi_model->delete($id);
         }
         $this->session->set_flashdata('success', 'Riwayat kalibrasi berhasil dihapus.');
+        if ($riwayat) {
+            $this->updateRiwayatStatus($riwayat->nomor_identifikasi);
+        }
         if (isset($_SERVER['HTTP_REFERER'])) {
             redirect($_SERVER['HTTP_REFERER']);
         } else {
             redirect('kalibrasi');
+        }
+    }
+
+    private function updateRiwayatStatus($nomorIdentifikasi) {
+        $this->db->where('nomor_identifikasi', $nomorIdentifikasi)->update('riwayat_kalibrasi', array('status' => 'Tidak aktif'));
+        $latest = $this->db->where('nomor_identifikasi', $nomorIdentifikasi)
+                           ->order_by('tanggal_terakhir', 'DESC')
+                           ->order_by('id', 'DESC')
+                           ->get('riwayat_kalibrasi')
+                           ->row();
+        if ($latest) {
+            $this->db->where('id', $latest->id)->update('riwayat_kalibrasi', array('status' => 'Aktif'));
         }
     }
 

@@ -1,37 +1,92 @@
 <style>
 .kalibrasi-tabs {
     display: inline-flex;
-    background-color: #f1f3f5;
-    border-radius: 8px;
+    background-color: #e9ecef;
+    border-radius: 10px;
     padding: 4px;
 }
 .kalibrasi-tab {
-    padding: 8px 40px;
+    padding: 8px 24px;
     color: #6c757d;
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.95rem;
-    border-radius: 6px;
+    font-size: 0.9rem;
+    border-radius: 8px;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    text-align: center;
 }
 .kalibrasi-tab:hover {
-    color: #495057;
+    color: #343a40;
 }
 .kalibrasi-tab.active {
     background-color: #ffffff;
-    color: #3b5998;
+    color: #2c3e50;
     font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+@media (max-width: 575.98px) {
+    .kalibrasi-tabs {
+        width: 100%;
+        display: flex;
+    }
+    .kalibrasi-tabs .dropdown {
+        flex: 1;
+        display: flex;
+    }
+    .kalibrasi-tab {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
 }
 </style>
 
 <div class="mb-4 mt-3">
-    <h6 class="text-uppercase fw-bold text-secondary mb-3" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
+    <h6 class="text-uppercase fw-bold text-secondary mb-2" style="letter-spacing: 0.5px;">MASTER KALIBRASI</h6>
     <div class="kalibrasi-tabs shadow-sm">
-        <a href="<?= base_url('kalibrasi') ?>" class="kalibrasi-tab">Eksternal</a>
-        <a href="<?= base_url('kalibrasi-internal') ?>" class="kalibrasi-tab active">Internal</a>
+        <!-- Eksternal Dropdown -->
+        <div class="dropdown">
+            <button type="button" id="btn-eksternal-dropdown" class="kalibrasi-tab dropdown-toggle border-0" data-bs-toggle="dropdown" aria-expanded="false">
+                Eksternal
+            </button>
+            <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-1">
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="<?= base_url('kalibrasi?tab=dashboard') ?>">
+                        <i class="bi bi-speedometer2 text-primary"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="<?= base_url('kalibrasi?tab=data') ?>">
+                        <i class="bi bi-table text-primary"></i> Instrumen
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Internal Dropdown -->
+        <div class="dropdown">
+            <button type="button" id="btn-internal-dropdown" class="kalibrasi-tab active dropdown-toggle border-0" data-bs-toggle="dropdown" aria-expanded="false">
+                Internal
+            </button>
+            <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-1">
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="#" onclick="switchViewMode('dashboard'); return false;">
+                        <i class="bi bi-speedometer2 text-primary"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2 px-3 fw-medium d-flex align-items-center gap-2" href="#" onclick="switchViewMode('data'); return false;">
+                        <i class="bi bi-table text-primary"></i> Instrumen
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<!-- SECTION 1: DASHBOARD OVERVIEW -->
+<div id="section-dashboard-view">
 
 <!-- 4 OVERVIEW CARDS (BOOTSTRAP SIMPLE CARDS) -->
 <div class="row g-3 mb-4">
@@ -55,7 +110,7 @@
             <div class="card-body p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Passed (In-Cal)</span>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Dikalibrasi</span>
                         <h3 class="fw-bold text-success mb-0 mt-1"><?= esc($summary['aktif'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
                     </div>
                     <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -70,7 +125,7 @@
             <div class="card-body p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Jatuh Tempo Bulan Ini</span>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Jatuh Tempo bulan ini</span>
                         <h3 class="fw-bold text-warning mb-0 mt-1"><?= esc($summary['due_soon'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
                     </div>
                     <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -85,7 +140,7 @@
             <div class="card-body p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Out of Spec (Overdue)</span>
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Rusak</span>
                         <h3 class="fw-bold text-danger mb-0 mt-1"><?= esc($summary['overdue'] ?? 0) ?> <span class="fs-6 text-muted fw-normal">Unit</span></h3>
                     </div>
                     <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -99,11 +154,11 @@
 
 <!-- CHARTS ROW 1 (MATCHING GAMBAR 1 FROM MENTOR) -->
 <div class="row g-3 mb-4">
-    <!-- Chart 1: Yearly Maintenance Execution Curve -->
+    <!-- Chart 1: Kurva Pelaksanaan Kalibrasi Tahunan -->
     <div class="col-12 col-lg-7">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold text-dark mb-0">Yearly Maintenance Execution Curve</h6>
+                <h6 class="fw-bold text-dark mb-0">Kurva Pelaksanaan Kalibrasi Tahunan</h6>
                 <div class="d-flex align-items-center gap-2">
                     <label for="selectTahunInternal" class="form-label mb-0 text-muted fw-semibold" style="font-size: 0.78rem;">Tahun:</label>
                     <select id="selectTahunInternal" class="form-select form-select-sm shadow-sm border" style="width: 95px; font-size: 0.82rem; font-weight: 600;" onchange="location.href='?tahun=' + this.value;">
@@ -119,11 +174,11 @@
         </div>
     </div>
 
-    <!-- Chart 2: Yearly Not Yet Finished Chart -->
+    <!-- Chart 2: Grafik Status Kalibrasi per Seksi -->
     <div class="col-12 col-lg-5">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold text-dark mb-0">Yearly Not Yet Finished Chart</h6>
+                <h6 class="fw-bold text-dark mb-0">Grafik Status Kalibrasi per Seksi</h6>
                 <span class="badge bg-light text-secondary border">Per Seksi</span>
             </div>
             <div class="card-body p-3">
@@ -161,6 +216,10 @@
         </div>
     </div>
 </div>
+</div> <!-- END #section-dashboard-view -->
+
+<!-- SECTION 2: DATA INSTRUMEN TABLE -->
+<div id="section-data-view" style="display: none;">
 
 <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-4">
@@ -206,6 +265,7 @@
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Periode</th>
                         <th colspan="2" class="fw-bold border-bottom-0 text-center">Riwayat Kalibrasi</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Standar Batas</th>
+                        <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Kondisi</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Keterangan</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Status</th>
                         <th rowspan="2" class="fw-bold border-bottom-0 align-middle text-center">Aksi</th>
@@ -222,7 +282,7 @@
                 <tbody>
                     <?php if(empty($instrumen)) : ?>
                         <tr>
-                            <td colspan="18" class="text-center py-4 text-muted">Belum ada data instrumen standar kerja.</td>
+                            <td colspan="19" class="text-center py-4 text-muted">Belum ada data instrumen standar kerja.</td>
                         </tr>
                     <?php else : ?>
                         <?php foreach($instrumen as $item) : ?>
@@ -248,18 +308,39 @@
                                 <td><?= esc($item->tanggal_terakhir ?? '-') ?></td>
                                 <td><?= esc($item->tahun_sertifikasi_berikutnya ?? '-') ?></td>
                                 <td><?= esc($item->batas_penerimaan ?? '-') ?></td>
+                                <td>
+                                    <?php
+                                        $k = strtolower($item->kondisi ?? 'baik');
+                                        if ($k === 'rusak') {
+                                            echo '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold" style="font-size: 0.78rem;">Rusak</span>';
+                                        } else if ($k === 'perbaikan') {
+                                            echo '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold" style="font-size: 0.78rem;">Perbaikan</span>';
+                                        } else {
+                                            echo '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold" style="font-size: 0.78rem;">Baik</span>';
+                                        }
+                                    ?>
+                                </td>
                                 <td class="text-start"><?= esc($item->keterangan ?? '-') ?></td>
                                 <td>
                                     <?php
-                                        $statusText = 'Aktif';
-                                        $textClass = 'text-success';
-                                        if (empty($item->tanggal_terakhir)) {
-                                            $statusText = 'Belum dikalibrasi';
+                                        $kondisiVal = strtolower($item->kondisi ?? 'baik');
+                                        if ($kondisiVal === 'rusak') {
+                                            $statusText = 'Rusak';
+                                            $textClass = 'text-danger';
+                                        } else if ($kondisiVal === 'perbaikan') {
+                                            $statusText = 'Perbaikan';
                                             $textClass = 'text-warning';
                                         } else {
-                                            if (!empty($item->tanggal_berikutnya) && strtotime($item->tanggal_berikutnya) < time()) {
-                                                $statusText = 'Tidak aktif';
-                                                $textClass = 'text-danger';
+                                            $statusText = 'Aktif';
+                                            $textClass = 'text-success';
+                                            if (empty($item->tanggal_terakhir)) {
+                                                $statusText = 'Belum dikalibrasi';
+                                                $textClass = 'text-warning';
+                                            } else {
+                                                if (!empty($item->tanggal_berikutnya) && strtotime($item->tanggal_berikutnya) < time()) {
+                                                    $statusText = 'Tidak aktif';
+                                                    $textClass = 'text-danger';
+                                                }
                                             }
                                         }
                                     ?>
@@ -288,6 +369,7 @@
         </table>
     </div>
 </div>
+</div> <!-- END #section-data-view -->
 
 <style>
     @media (max-width: 767.98px) {
@@ -371,15 +453,16 @@ window.addEventListener('DOMContentLoaded', function() {
     var finishedData = <?= json_encode($chartData['finished_monthly'] ?? array_fill(0,12,0)) ?>;
     
     var seksiCategories = <?= json_encode(!empty($chartData['seksi_categories']) ? $chartData['seksi_categories'] : array('Bengkel', 'QC Lab', 'Maintenance')) ?>;
-    var seksiPostponed = <?= json_encode(!empty($chartData['seksi_postponed']) ? $chartData['seksi_postponed'] : array(0, 0, 0)) ?>;
-    var seksiContinued = <?= json_encode(!empty($chartData['seksi_continued']) ? $chartData['seksi_continued'] : array(1, 1, 1)) ?>;
+    var seksiAktif = <?= json_encode(!empty($chartData['seksi_aktif']) ? $chartData['seksi_aktif'] : array(0, 0, 0)) ?>;
+    var seksiTidakAktif = <?= json_encode(!empty($chartData['seksi_tidak_aktif']) ? $chartData['seksi_tidak_aktif'] : array(0, 0, 0)) ?>;
+    var seksiBelumKalibrasi = <?= json_encode(!empty($chartData['seksi_belum_kalibrasi']) ? $chartData['seksi_belum_kalibrasi'] : array(0, 0, 0)) ?>;
 
     var curveOptions = {
         series: [{
-            name: 'Finished',
+            name: 'Selesai Dikalibrasi',
             data: finishedData
         }, {
-            name: 'Target',
+            name: 'Target Kalibrasi',
             data: targetData
         }],
         chart: {
@@ -411,11 +494,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
     var barOptions = {
         series: [{
-            name: 'Postponed',
-            data: seksiPostponed
+            name: 'Aktif',
+            data: seksiAktif
         }, {
-            name: 'Continued',
-            data: seksiContinued
+            name: 'Tidak Aktif',
+            data: seksiTidakAktif
+        }, {
+            name: 'Belum Dikalibrasi',
+            data: seksiBelumKalibrasi
         }],
         chart: {
             type: 'bar',
@@ -423,7 +509,7 @@ window.addEventListener('DOMContentLoaded', function() {
             stacked: true,
             toolbar: { show: false }
         },
-        colors: ['#f1c40f', '#2ecc71'],
+        colors: ['#2ecc71', '#e74c3c', '#f1c40f'],
         plotOptions: {
             bar: {
                 horizontal: false,
@@ -440,12 +526,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Chart 3: Status Populasi Instrumen (Donut Chart)
     var donutOptions = {
-        series: [<?= (int)($summary['aktif'] ?? 0) ?>, <?= (int)($summary['due_soon'] ?? 0) ?>, <?= (int)($summary['overdue'] ?? 0) ?>],
+        series: [<?= (int)($summary['in_cal_slice'] ?? 0) ?>, <?= (int)($summary['due_soon'] ?? 0) ?>, <?= (int)($summary['overdue_populasi'] ?? 0) ?>],
         chart: {
             type: 'donut',
             height: 240
         },
-        labels: ['In-Cal (Aktif)', 'Due Soon', 'Overdue'],
+        labels: ['Dikalibrasi', 'Akan Expired', 'Tidak Aktif'],
         colors: ['#2ecc71', '#f1c40f', '#e74c3c'],
         legend: { position: 'right' },
         dataLabels: { enabled: true },
@@ -478,13 +564,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
     var horizBarOptions = {
         series: [{
-            name: 'In-Cal (Aktif)',
+            name: 'Dikalibrasi',
             data: katInCal
         }, {
-            name: 'Due Soon',
+            name: 'Akan Expired',
             data: katDueSoon
         }, {
-            name: 'Overdue',
+            name: 'Tidak Aktif',
             data: katOverdue
         }],
         chart: {
@@ -524,4 +610,59 @@ window.addEventListener('DOMContentLoaded', function() {
     var horizBarChart = new ApexCharts(document.querySelector("#breakdownJenisAlatChartInternal"), horizBarOptions);
     horizBarChart.render();
 });
+
+function switchViewMode(mode) {
+    var dashboardSec = document.getElementById('section-dashboard-view');
+    var dataSec = document.getElementById('section-data-view');
+    var btnDashboard = document.getElementById('btn-view-dashboard');
+    var btnData = document.getElementById('btn-view-data');
+
+    if (!dashboardSec || !dataSec) return;
+
+    if (mode === 'data') {
+        dashboardSec.style.display = 'none';
+        dataSec.style.display = 'block';
+
+        if (btnDashboard) btnDashboard.classList.remove('active');
+        if (btnData) btnData.classList.add('active');
+
+        setTimeout(function() {
+            if (window.jQuery && $.fn && $.fn.DataTable && $.fn.DataTable.isDataTable('#tabelInstrumen')) {
+                $('#tabelInstrumen').DataTable().columns.adjust();
+            }
+        }, 50);
+
+        if (window.history && window.history.replaceState) {
+            var url = new URL(window.location);
+            url.searchParams.set('tab', 'data');
+            window.history.replaceState({}, '', url);
+        }
+    } else {
+        dataSec.style.display = 'none';
+        dashboardSec.style.display = 'block';
+
+        if (btnData) btnData.classList.remove('active');
+        if (btnDashboard) btnDashboard.classList.add('active');
+
+        if (window.history && window.history.replaceState) {
+            var url = new URL(window.location);
+            url.searchParams.set('tab', 'dashboard');
+            window.history.replaceState({}, '', url);
+        }
+    }
+}
+
+(function() {
+    function checkInitialTab() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'data' || urlParams.get('view') === 'data') {
+            switchViewMode('data');
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkInitialTab);
+    } else {
+        checkInitialTab();
+    }
+})();
 </script>
