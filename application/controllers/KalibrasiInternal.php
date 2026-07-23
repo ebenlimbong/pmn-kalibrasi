@@ -1,15 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class KalibrasiInternal extends CI_Controller {
+class KalibrasiInternal extends CI_Controller
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->load->model('MasterInstrumenInternal_model');
         $this->load->model('RiwayatKalibrasiInternal_model');
     }
 
-    private function processMultiInput($nilaiArr, $satuanArr) {
+    private function processMultiInput($nilaiArr, $satuanArr)
+    {
         $gabungan = array();
         if (is_array($nilaiArr)) {
             foreach ($nilaiArr as $key => $val) {
@@ -29,29 +32,33 @@ class KalibrasiInternal extends CI_Controller {
         return implode(', ', $gabungan);
     }
 
-    public function index() {
+    public function index()
+    {
         $this->load->model('RiwayatKalibrasiInternal_model');
         $instrumenList = $this->MasterInstrumenInternal_model->getInstrumenWithLatestKalibrasi();
         $allRiwayat = $this->RiwayatKalibrasiInternal_model->get_all();
-        
-        $selectedYear = $this->input->get('tahun') ? (int)$this->input->get('tahun') : (int)date('Y');
+
+        $selectedYear = $this->input->get('tahun') ? (int) $this->input->get('tahun') : (int) date('Y');
 
         // Extract all available years from database
-        $yearsSet = array((int)date('Y'), 2026, 2025, 2024);
+        $yearsSet = array((int) date('Y'), 2026, 2025, 2024);
         foreach ($instrumenList as $item) {
             if (!empty($item->tanggal_berikutnya)) {
-                $y = (int)date('Y', strtotime($item->tanggal_berikutnya));
-                if ($y > 2000) $yearsSet[] = $y;
+                $y = (int) date('Y', strtotime($item->tanggal_berikutnya));
+                if ($y > 2000)
+                    $yearsSet[] = $y;
             }
             if (!empty($item->tanggal_terakhir)) {
-                $y = (int)date('Y', strtotime($item->tanggal_terakhir));
-                if ($y > 2000) $yearsSet[] = $y;
+                $y = (int) date('Y', strtotime($item->tanggal_terakhir));
+                if ($y > 2000)
+                    $yearsSet[] = $y;
             }
         }
         foreach ($allRiwayat as $r) {
             if (!empty($r->tanggal_terakhir)) {
-                $y = (int)date('Y', strtotime($r->tanggal_terakhir));
-                if ($y > 2000) $yearsSet[] = $y;
+                $y = (int) date('Y', strtotime($r->tanggal_terakhir));
+                if ($y > 2000)
+                    $yearsSet[] = $y;
             }
         }
         $availableYears = array_values(array_unique($yearsSet));
@@ -75,7 +82,7 @@ class KalibrasiInternal extends CI_Controller {
             $item->tahun_sertifikasi_berikutnya = '-';
             if (!empty($item->tanggal_terakhir) && !empty($item->periode_kalibrasi)) {
                 $year = (int) date('Y', strtotime($item->tanggal_terakhir));
-                $item->tahun_sertifikasi_berikutnya = $year + (int)$item->periode_kalibrasi;
+                $item->tahun_sertifikasi_berikutnya = $year + (int) $item->periode_kalibrasi;
             }
 
             $isRusak = (!empty($item->kondisi) && strtolower($item->kondisi) === 'rusak');
@@ -99,7 +106,7 @@ class KalibrasiInternal extends CI_Controller {
 
             if (!empty($item->tanggal_berikutnya)) {
                 // Count target for selected year only
-                if ((int)date('Y', strtotime($item->tanggal_berikutnya)) === $selectedYear) {
+                if ((int) date('Y', strtotime($item->tanggal_berikutnya)) === $selectedYear) {
                     $mTarget = (int) date('n', strtotime($item->tanggal_berikutnya));
                     $targetMonthly[$mTarget]++;
                 }
@@ -156,7 +163,7 @@ class KalibrasiInternal extends CI_Controller {
             $key = $fr['nomor'] . '_' . $fr['tanggal'];
             if (!isset($uniqueFinished[$key])) {
                 $uniqueFinished[$key] = true;
-                if ((int)date('Y', strtotime($fr['tanggal'])) === $selectedYear) {
+                if ((int) date('Y', strtotime($fr['tanggal'])) === $selectedYear) {
                     $mFinished = (int) date('n', strtotime($fr['tanggal']));
                     $finishedMonthly[$mFinished]++;
                 }
@@ -164,25 +171,25 @@ class KalibrasiInternal extends CI_Controller {
         }
 
         $summary = array(
-            'total'            => $totalCount,
-            'aktif'            => $aktifCount,
-            'due_soon'         => $dueSoonCount,
-            'overdue'          => $rusakCount,
+            'total' => $totalCount,
+            'aktif' => $aktifCount,
+            'due_soon' => $dueSoonCount,
+            'overdue' => $rusakCount,
             'overdue_populasi' => $overdueCalCount,
-            'in_cal_slice'     => max(0, $aktifCount - $dueSoonCount)
+            'in_cal_slice' => max(0, $aktifCount - $dueSoonCount)
         );
 
         $chartData = array(
-            'target_monthly'         => array_values($targetMonthly),
-            'finished_monthly'       => array_values($finishedMonthly),
-            'seksi_categories'       => array_keys($seksiStats),
-            'seksi_aktif'            => array_column($seksiStats, 'aktif'),
-            'seksi_tidak_aktif'      => array_column($seksiStats, 'tidak_aktif'),
-            'seksi_belum_kalibrasi'  => array_column($seksiStats, 'belum_dikalibrasi'),
-            'kat_categories'         => array_keys($katStats),
-            'kat_in_cal'             => array_column($katStats, 'in_cal'),
-            'kat_due_soon'           => array_column($katStats, 'due_soon'),
-            'kat_overdue'            => array_column($katStats, 'overdue')
+            'target_monthly' => array_values($targetMonthly),
+            'finished_monthly' => array_values($finishedMonthly),
+            'seksi_categories' => array_keys($seksiStats),
+            'seksi_aktif' => array_column($seksiStats, 'aktif'),
+            'seksi_tidak_aktif' => array_column($seksiStats, 'tidak_aktif'),
+            'seksi_belum_kalibrasi' => array_column($seksiStats, 'belum_dikalibrasi'),
+            'kat_categories' => array_keys($katStats),
+            'kat_in_cal' => array_column($katStats, 'in_cal'),
+            'kat_due_soon' => array_column($katStats, 'due_soon'),
+            'kat_overdue' => array_column($katStats, 'overdue')
         );
 
         $data = array(
@@ -198,7 +205,8 @@ class KalibrasiInternal extends CI_Controller {
         $this->load->view('layout/footer', $data);
     }
 
-    public function detail($id) {
+    public function detail($id)
+    {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if (!$instrumen) {
             show_404();
@@ -208,7 +216,7 @@ class KalibrasiInternal extends CI_Controller {
         $qrUrl = $this->qrcode->generate(base_url('kalibrasi-internal/detail/' . $id));
 
         $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_nomor($instrumen->nomor_identifikasi);
-        usort($riwayat, function($a, $b) {
+        usort($riwayat, function ($a, $b) {
             return strtotime($b->tanggal_terakhir) - strtotime($a->tanggal_terakhir);
         });
 
@@ -224,7 +232,8 @@ class KalibrasiInternal extends CI_Controller {
         $this->load->view('layout/footer', $data);
     }
 
-    public function create() {
+    public function create()
+    {
         $data = array(
             'title' => 'Tambah Instrumen Standar Kerja'
         );
@@ -233,32 +242,33 @@ class KalibrasiInternal extends CI_Controller {
         $this->load->view('layout/footer', $data);
     }
 
-    public function store() {
+    public function store()
+    {
         $nomorIdentifikasi = $this->input->post('nomor_identifikasi');
         $periodeKalibrasi = $this->input->post('periode_kalibrasi');
-        
+
         $masterData = array(
             'nomor_identifikasi' => $nomorIdentifikasi,
-            'nama_instrumen'     => $this->input->post('nama_instrumen'),
-            'seksi_pemakai'      => $this->input->post('seksi_pemakai'),
-            'kategori_alat'      => $this->input->post('kategori_alat'),
+            'nama_instrumen' => $this->input->post('nama_instrumen'),
+            'seksi_pemakai' => $this->input->post('seksi_pemakai'),
+            'kategori_alat' => $this->input->post('kategori_alat'),
             'interval_kapasitas' => $this->processMultiInput($this->input->post('interval_nilai'), $this->input->post('interval_satuan')),
-            'ketelitian'         => $this->processMultiInput($this->input->post('ketelitian_nilai'), $this->input->post('ketelitian_satuan')),
-            'model_tipe'         => $this->input->post('model_tipe'),
-            'pembuat'            => $this->input->post('pembuat'),
-            'kegunaan'           => $this->input->post('kegunaan'),
-            'periode_kalibrasi'  => $periodeKalibrasi,
+            'ketelitian' => $this->processMultiInput($this->input->post('ketelitian_nilai'), $this->input->post('ketelitian_satuan')),
+            'model_tipe' => $this->input->post('model_tipe'),
+            'pembuat' => $this->input->post('pembuat'),
+            'kegunaan' => $this->input->post('kegunaan'),
+            'periode_kalibrasi' => $periodeKalibrasi,
             'tanggal_mulai_digunakan' => $this->input->post('tanggal_mulai_digunakan'),
-            'batas_penerimaan'   => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
-            'keterangan'         => $this->input->post('keterangan'),
-            'kondisi'            => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
+            'batas_penerimaan' => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
+            'keterangan' => $this->input->post('keterangan'),
+            'kondisi' => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
         );
 
         // Handle foto_alat upload
         if (!empty($_FILES['foto_alat']['name'])) {
-            $config['upload_path']   = './uploads/instrumen/';
+            $config['upload_path'] = './uploads/instrumen/';
             $config['allowed_types'] = 'gif|jpg|jpeg|png|webp';
-            $config['encrypt_name']  = TRUE;
+            $config['encrypt_name'] = TRUE;
             $this->load->library('upload', $config);
             $this->upload->initialize($config);
 
@@ -275,15 +285,15 @@ class KalibrasiInternal extends CI_Controller {
         if (!empty($tanggalTerakhir)) {
             $riwayatData = array(
                 'nomor_identifikasi' => $nomorIdentifikasi,
-                'tanggal_terakhir'   => $tanggalTerakhir,
-                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int)$periodeKalibrasi . ' years', strtotime($tanggalTerakhir))),
-                'status'             => 'Aktif'
+                'tanggal_terakhir' => $tanggalTerakhir,
+                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int) $periodeKalibrasi . ' years', strtotime($tanggalTerakhir))),
+                'status' => 'Aktif'
             );
 
             if (!empty($_FILES['file_sertifikat']['name'])) {
-                $configCert['upload_path']   = './uploads/sertifikat/';
+                $configCert['upload_path'] = './uploads/sertifikat/';
                 $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
-                $configCert['encrypt_name']  = TRUE;
+                $configCert['encrypt_name'] = TRUE;
                 $this->load->library('upload', $configCert);
                 $this->upload->initialize($configCert);
 
@@ -301,7 +311,8 @@ class KalibrasiInternal extends CI_Controller {
         redirect('kalibrasi-internal');
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if (!$instrumen) {
             show_404();
@@ -320,7 +331,8 @@ class KalibrasiInternal extends CI_Controller {
         $this->load->view('layout/footer', $data);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if (!$instrumen) {
             show_404();
@@ -328,25 +340,25 @@ class KalibrasiInternal extends CI_Controller {
 
         $updateData = array(
             'nomor_identifikasi' => $this->input->post('nomor_identifikasi'),
-            'nama_instrumen'     => $this->input->post('nama_instrumen'),
-            'seksi_pemakai'      => $this->input->post('seksi_pemakai'),
-            'kategori_alat'      => $this->input->post('kategori_alat'),
+            'nama_instrumen' => $this->input->post('nama_instrumen'),
+            'seksi_pemakai' => $this->input->post('seksi_pemakai'),
+            'kategori_alat' => $this->input->post('kategori_alat'),
             'interval_kapasitas' => $this->processMultiInput($this->input->post('interval_nilai'), $this->input->post('interval_satuan')),
-            'ketelitian'         => $this->processMultiInput($this->input->post('ketelitian_nilai'), $this->input->post('ketelitian_satuan')),
-            'model_tipe'         => $this->input->post('model_tipe'),
-            'pembuat'            => $this->input->post('pembuat'),
-            'kegunaan'           => $this->input->post('kegunaan'),
-            'periode_kalibrasi'  => $this->input->post('periode_kalibrasi'),
+            'ketelitian' => $this->processMultiInput($this->input->post('ketelitian_nilai'), $this->input->post('ketelitian_satuan')),
+            'model_tipe' => $this->input->post('model_tipe'),
+            'pembuat' => $this->input->post('pembuat'),
+            'kegunaan' => $this->input->post('kegunaan'),
+            'periode_kalibrasi' => $this->input->post('periode_kalibrasi'),
             'tanggal_mulai_digunakan' => $this->input->post('tanggal_mulai_digunakan'),
-            'batas_penerimaan'   => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
-            'keterangan'         => $this->input->post('keterangan'),
-            'kondisi'            => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
+            'batas_penerimaan' => $this->processMultiInput($this->input->post('batas_nilai'), $this->input->post('batas_satuan')),
+            'keterangan' => $this->input->post('keterangan'),
+            'kondisi' => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
         );
 
         if (!empty($_FILES['foto_alat']['name'])) {
-            $config['upload_path']   = './uploads/instrumen/';
+            $config['upload_path'] = './uploads/instrumen/';
             $config['allowed_types'] = 'gif|jpg|jpeg|png|webp';
-            $config['encrypt_name']  = TRUE;
+            $config['encrypt_name'] = TRUE;
             $this->load->library('upload', $config);
             $this->upload->initialize($config);
 
@@ -365,21 +377,21 @@ class KalibrasiInternal extends CI_Controller {
         // Update or insert latest calibration history
         $riwayatId = $this->input->post('riwayat_id');
         $tanggalTerakhir = $this->input->post('tanggal_terakhir');
-        
+
         if (!empty($tanggalTerakhir)) {
             $periodeKalibrasi = $updateData['periode_kalibrasi'];
             $riwayatData = array(
                 'nomor_identifikasi' => $updateData['nomor_identifikasi'],
-                'tanggal_terakhir'   => $tanggalTerakhir,
-                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int)$periodeKalibrasi . ' years', strtotime($tanggalTerakhir))),
-                'status'             => 'Aktif'
+                'tanggal_terakhir' => $tanggalTerakhir,
+                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int) $periodeKalibrasi . ' years', strtotime($tanggalTerakhir))),
+                'status' => 'Aktif'
             );
 
             // Handle file_sertifikat upload
             if (!empty($_FILES['file_sertifikat']['name'])) {
-                $configCert['upload_path']   = './uploads/sertifikat/';
+                $configCert['upload_path'] = './uploads/sertifikat/';
                 $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
-                $configCert['encrypt_name']  = TRUE;
+                $configCert['encrypt_name'] = TRUE;
                 $this->load->library('upload', $configCert);
                 $this->upload->initialize($configCert);
 
@@ -401,13 +413,14 @@ class KalibrasiInternal extends CI_Controller {
         redirect('kalibrasi-internal');
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if ($instrumen) {
             if (!empty($instrumen->foto_alat) && file_exists('./uploads/instrumen/' . $instrumen->foto_alat)) {
                 @unlink('./uploads/instrumen/' . $instrumen->foto_alat);
             }
-            
+
             $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_nomor($instrumen->nomor_identifikasi);
             foreach ($riwayat as $r) {
                 if (!empty($r->file_sertifikat) && file_exists('./uploads/sertifikat/' . $r->file_sertifikat)) {
@@ -415,14 +428,15 @@ class KalibrasiInternal extends CI_Controller {
                 }
                 $this->RiwayatKalibrasiInternal_model->delete($r->id);
             }
-            
+
             $this->MasterInstrumenInternal_model->delete($id);
         }
         $this->session->set_flashdata('success', 'Data instrumen standar kerja berhasil dihapus.');
         redirect('kalibrasi-internal');
     }
 
-    public function storeRiwayat($id) {
+    public function storeRiwayat($id)
+    {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if (!$instrumen) {
             show_404();
@@ -432,17 +446,17 @@ class KalibrasiInternal extends CI_Controller {
         if (!empty($tanggalTerakhir)) {
             $riwayatData = array(
                 'nomor_identifikasi' => $instrumen->nomor_identifikasi,
-                'tanggal_terakhir'   => $tanggalTerakhir,
-                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int)$instrumen->periode_kalibrasi . ' years', strtotime($tanggalTerakhir))),
-                'batas_penerimaan'   => $this->input->post('batas_penerimaan'),
-                'keterangan'         => $this->input->post('keterangan'),
-                'status'             => 'Aktif'
+                'tanggal_terakhir' => $tanggalTerakhir,
+                'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int) $instrumen->periode_kalibrasi . ' years', strtotime($tanggalTerakhir))),
+                'batas_penerimaan' => $this->input->post('batas_penerimaan'),
+                'keterangan' => $this->input->post('keterangan'),
+                'status' => 'Aktif'
             );
 
             if (!empty($_FILES['file_sertifikat']['name'])) {
-                $configCert['upload_path']   = './uploads/sertifikat/';
+                $configCert['upload_path'] = './uploads/sertifikat/';
                 $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
-                $configCert['encrypt_name']  = TRUE;
+                $configCert['encrypt_name'] = TRUE;
                 $this->load->library('upload', $configCert);
                 $this->upload->initialize($configCert);
 
@@ -460,7 +474,8 @@ class KalibrasiInternal extends CI_Controller {
         redirect('kalibrasi-internal/detail/' . $id);
     }
 
-    public function deleteRiwayat($id) {
+    public function deleteRiwayat($id)
+    {
         $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_id($id);
         if ($riwayat) {
             if (!empty($riwayat->file_sertifikat) && file_exists('./uploads/sertifikat/' . $riwayat->file_sertifikat)) {
@@ -479,19 +494,21 @@ class KalibrasiInternal extends CI_Controller {
         }
     }
 
-    private function updateRiwayatStatus($nomorIdentifikasi) {
+    private function updateRiwayatStatus($nomorIdentifikasi)
+    {
         $this->db->where('nomor_identifikasi', $nomorIdentifikasi)->update('riwayat_kalibrasi_internal', array('status' => 'Tidak aktif'));
         $latest = $this->db->where('nomor_identifikasi', $nomorIdentifikasi)
-                           ->order_by('tanggal_terakhir', 'DESC')
-                           ->order_by('id', 'DESC')
-                           ->get('riwayat_kalibrasi_internal')
-                           ->row();
+            ->order_by('tanggal_terakhir', 'DESC')
+            ->order_by('id', 'DESC')
+            ->get('riwayat_kalibrasi_internal')
+            ->row();
         if ($latest) {
             $this->db->where('id', $latest->id)->update('riwayat_kalibrasi_internal', array('status' => 'Aktif'));
         }
     }
 
-    public function chartData($id) {
+    public function chartData($id)
+    {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if (!$instrumen) {
             return $this->output
@@ -500,13 +517,13 @@ class KalibrasiInternal extends CI_Controller {
         }
 
         $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_nomor($instrumen->nomor_identifikasi);
-        
+
         $labels = array();
         $data = array();
-        
-        foreach($riwayat as $r) {
+
+        foreach ($riwayat as $r) {
             $labels[] = $r->tanggal_terakhir;
-            $data[] = isset($r->deviasi_aktual) ? (float)$r->deviasi_aktual : 0;
+            $data[] = isset($r->deviasi_aktual) ? (float) $r->deviasi_aktual : 0;
         }
 
         return $this->output
