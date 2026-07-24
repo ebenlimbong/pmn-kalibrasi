@@ -16,22 +16,17 @@ Berikut adalah 9 alur proses bisnis bertingkat yang disusun sesuai format **Inal
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[User Mengklik Dropdown Navbar]
-    B --> C{Pilih Modul}
-    C -->|Eksternal| D{Pilih View}
-    C -->|Internal| E{Pilih View}
-    D -->|Dashboard| F[Tampilkan Dashboard Eksternal]
-    D -->|Instrumen| G[Tampilkan Tabel Instrumen Eksternal]
-    E -->|Dashboard| H[Tampilkan Dashboard Internal]
-    E -->|Instrumen| I[Tampilkan Tabel Instrumen Internal]
-    F & G & H & I --> J([Selesai])
+    A([Mulai]) --> B[Pilih Modul Eksternal / Internal]
+    B --> C[Pilih View Mode: Dashboard / Instrumen]
+    C --> D[Validasi Param Tab]
+    D --> E[Tampilkan View Aktif]
+    E --> F([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Navigasi Modul** | - User memilih modul **Eksternal** atau **Internal** dari dropdown navbar utama.<br>- Sistem mengarahkan user ke halaman modul yang dipilih. |
-| **Switch View Mode** | - User memilih opsi **Dashboard** atau **Instrumen** pada menu dropdown.<br>- Sistem mengaktifkan section yang sesuai (`#section-dashboard-view` atau `#section-data-view`) secara instan tanpa reload halaman.<br>- URL query parameter otomatis disesuaikan (`?tab=dashboard` atau `?tab=data`). |
-| **Selesai** | Tampilan diperbarui secara dinamis sesuai preferensi pemantauan user. |
+| **User** | |
+| Navigasi Switch Mode | - User memilih modul **Eksternal** atau **Internal** dari navbar utama<br>- User memilih opsi tampilan **Dashboard** atau **Instrumen**<br>- Sistem memvalidasi parameter tampilan pada URL<br>- Sistem menampilkan view aktif secara dinamis<br>- Selesai |
 
 ---
 
@@ -39,95 +34,61 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Ambil Data Master & Riwayat Terkait]
-    B --> C[Kalkulasi Stat Cards Overview]
-    C --> D[Render Kurva Kalibrasi Tahunan]
-    C --> E[Render Grafik Kondisi Alat per Kategori]
-    C --> F[Render Status Populasi - Pie Chart]
-    C --> G[Render Breakdown Status per Jenis Alat]
-    D & E & F & G --> H([Selesai])
+    A([Mulai]) --> B[Pilih Menu Dashboard]
+    B --> C[Hitung Stat Cards & Ringkasan KPI]
+    C --> D[Render 4 Grafik Utama Kalibrasi]
+    D --> E([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Penyatuan Modul** | Alur ini berlaku seragam untuk modul **Eksternal** maupun **Internal**, menyajikan indikator kinerja utama (*KPI*) kalibrasi secara terstruktur. |
-| **Kalkulasi Stat Cards** | - **Total Instrumen**: Menghitung seluruh unit instrumen terdaftar pada modul terpilih.<br>- **Dikalibrasi**: Menghitung alat dengan kalibrasi aktif (`tanggal_berikutnya >= hari ini`).<br>- **Jatuh Tempo bulan ini**: Menghitung alat yang jatuh tempo dalam 30 hari ke depan.<br>- **Rusak**: Menghitung total alat dengan kondisi fisik `rusak`. |
-| **Kurva Pelaksanaan** | Line chart membandingkan target kalibrasi per bulan dengan realisasi kalibrasi (*Selesai Dikalibrasi*) pada tahun terpilih. |
-| **Kondisi per Kategori** | Stacked column chart menampilkan statistik kondisi fisik alat per kategori (`Baik` 🟢, `Rusak` 🔴, `Perbaikan` 🟡). |
-| **Status Populasi (Pie)** | Donut chart menampilkan proporsi status kalibrasi alat (`Dikalibrasi` 🟢, `Akan Expired` 🟡, `Tidak Aktif` 🔴). |
-| **Breakdown Jenis Alat** | Horizontal stacked bar chart menampilkan distribusi status kalibrasi per jenis/kategori instrumen (`Dikalibrasi`, `Akan Expired`, `Tidak Aktif`). |
+| **User** | |
+| Pemantauan Dashboard | - User mengakses menu Dashboard (Eksternal / Internal)<br>- Sistem menghitung 4 Stat Cards Overview (Total, Dikalibrasi, Jatuh Tempo, Rusak)<br>- Sistem merender Kurva Pelaksanaan Tahunan & Grafik Kondisi per Kategori<br>- Sistem merender Pie Chart Populasi & Breakdown Jenis Alat<br>- Selesai |
 
 ---
 
 ### 🔹 Level 2: Pengelolaan Master Instrumen & Kondisi Alat
 
-#### 3.3 Alur Tambah Data Master Instrumen Baru (Add New Instrument)
+#### 3.3 Alur Tambah Data Master Instrumen Baru
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Buka Form Tambah Data]
-    B --> C[Input Identifikasi & Spesifikasi]
-    C --> D[Pilih Kondisi: Baik/Rusak/Perbaikan]
-    D --> E[Upload Foto Alat - Optional]
-    E --> F[Input Kalibrasi Pertama - Optional]
-    F --> G{Validasi Server}
-    G -->|Gagal| C
-    G -->|Berhasil| H[Simpan ke Database]
-    H --> I([Selesai])
+    A([Mulai]) --> B[Menu Tabel Instrumen] --> C[Klik Tambah Data] --> D[Input Data Master & Kondisi] --> E[Validasi Data] --> F[Submit] --> G([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Buka Form Tambah** | User mengklik tombol `+ Tambah Data` pada halaman list instrumen. |
-| **Input Identifikasi & Spesifikasi** | User mengisi Nomor Identifikasi (unik), Nama Instrumen, Seksi Pemakai, Kategori Alat, Interval/Kapasitas, Ketelitian, Model/Tipe, Pembuat, Kegunaan, Periode Kalibrasi (tahun), Tanggal Mulai Digunakan, dan Standar Batas. |
-| **Pilih Kondisi Alat** | User memilih kondisi fisik alat menggunakan *Modern Segmented Toggle*: `🟢 Baik`, `🔴 Rusak`, atau `🟡 Perbaikan`. |
-| **Upload Foto & Kalibrasi Awal** | User dapat mengunggah file foto alat (`.jpg`/`.png`) dan memasukkan data/sertifikat kalibrasi terakhir jika ada. |
-| **Validasi & Simpan** | Sistem memverifikasi keunikan nomor identifikasi. Jika sukses, data tersimpan di database master dan halaman dialihkan kembali ke tabel data. |
+| **User** | |
+| Tambah Master Instrumen | - User memilih menu Tabel Instrumen<br>- User menekan tombol **+ Tambah Data**<br>- User menginput spesifikasi instrumen, memilih kondisi alat, dan upload foto<br>- User melakukan validasi atas data yang diinputkan<br>- User menekan tombol **Submit** untuk menyimpan data<br>- Selesai |
 
 ---
 
-#### 3.4 Alur Edit Data Master & Perubahan Kondisi Alat (Edit Instrument)
+#### 3.4 Alur Edit Data Master & Perubahan Kondisi Alat
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Klik Tombol Edit pada Tabel]
-    B --> C[Form Terisi Data Eksisting Alat]
-    C --> D[Update Informasi Spesifikasi / Kondisi]
-    D --> E[Upload Foto Baru - Optional]
-    E --> F{Validasi Server}
-    F -->|Gagal| D
-    F -->|Berhasil| G[Update Database Master]
-    G --> H([Selesai])
+    A([Mulai]) --> B[Menu Tabel Instrumen] --> C[Pilih Alat & Klik Edit] --> D[Ubah Spesifikasi / Kondisi] --> E[Validasi Data] --> F[Submit] --> G([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Buka Form Edit** | User mengklik tombol `Edit` (ikon pensil) pada baris alat yang ingin diubah. |
-| **Modifikasi Data & Kondisi**| User memperbarui data spesifikasi atau mengubah kondisi fisik alat (`Baik`, `Rusak`, `Perbaikan`). |
-| **Update Foto** | User dapat mengganti foto fisik alat dengan mengunggah foto baru. |
-| **Validasi & Simpan** | Sistem menyimpan perubahan ke database master instrumen dan otomatis memperbarui statistik dashboard. |
+| **User** | |
+| Edit Master Instrumen | - User memilih menu Tabel Instrumen<br>- User memilih alat dan menekan ikon **Edit**<br>- User mengubah data spesifikasi atau memperbarui kondisi alat<br>- User melakukan validasi atas data yang diubah<br>- User menekan tombol **Submit** untuk menyimpan perubahan<br>- Selesai |
 
 ---
 
-#### 3.5 Alur Hapus Data Master Instrumen (Delete Instrument)
+#### 3.5 Alur Hapus Data Master Instrumen
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Klik Tombol Hapus pada Tabel]
-    B --> C{Konfirmasi Hapus?}
-    C -->|Batal| D([Selesai])
-    C -->|Ya| E[Hapus File Foto & Sertifikat Terkait]
-    E --> F[Hapus Data Master & Riwayat - Cascade]
-    F --> G[Refresh Tabel & Dashboard]
-    G --> D
+    A([Mulai]) --> B[Menu Tabel Instrumen] --> C[Klik Hapus] --> D{Konfirmasi?} -->|Ya| E[Hapus File & Database] --> F([Selesai])
+    D -->|Tidak| F
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Trigger Hapus** | User mengklik tombol `Hapus` (ikon tempat sampah) pada baris instrumen. |
-| **Konfirmasi User** | Pop-up konfirmasi sistem (*Browser Confirm*) meminta kepastian penghapusan data. |
-| **Penghapusan File & Data**| - Jika disetujui, sistem menghapus file fisik foto alat dan file sertifikat PDF dari server storage.<br>- Sistem menghapus record master instrumen di database (secara *CASCADE* menghapus seluruh riwayat terikat). |
-| **Pembaruan Tampilan** | Tabel instrumen dan statistik dashboard diperbarui secara otomatis. |
+| **User** | |
+| Hapus Master Instrumen | - User memilih menu Tabel Instrumen<br>- User menekan ikon **Hapus** pada baris instrumen<br>- User mengonfirmasi dialog hapus data<br>- Sistem menghapus file fisik foto/pdf dan record database master<br>- Selesai |
 
 ---
 
@@ -137,19 +98,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Klik Tombol Detail pada Tabel]
-    B --> C[Tampilkan Profil Fisik & Spesifikasi Alat]
-    C --> D[Render Grafik Kurva Deviasi Pengukuran]
-    D --> E[Tampilkan Tabel Riwayat Kalibrasi]
-    E --> F([Selesai])
+    A([Mulai]) --> B[Menu Tabel Instrumen] --> C[Klik Detail] --> D[Tampilkan Profil & Grafik Deviasi] --> E([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Akses Detail** | User mengklik tombol `Detail` (ikon mata) pada tabel instrumen. |
-| **Profil & Foto Alat** | Sistem menampilkan profil lengkap instrumen, spesifikasi teknis, umur alat, kondisi fisik, dan foto fisik instrumen. |
-| **Grafik Deviasi** | Line chart interaktif menampilkan riwayat nilai deviasi pengukuran dari setiap pelaksanaan kalibrasi dibandingkan dengan garis batas penerimaan (*tolerance limit*). |
-| **Tabel Riwayat** | Menampilkan seluruh riwayat kalibrasi terurut secara kronologis beserta link download sertifikat PDF. |
+| **User** | |
+| Halaman Detail | - User memilih menu Tabel Instrumen<br>- User menekan ikon **Detail** (mata) pada instrumen<br>- Sistem menampilkan profil alat, foto fisik, dan line chart kurva deviasi<br>- Sistem menampilkan tabel riwayat kalibrasi terurut kronologis<br>- Selesai |
 
 ---
 
@@ -157,24 +112,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Klik Tombol '+ Tambah Kalibrasi' di Detail]
-    B --> C[Input Tanggal Kalibrasi, Sertifikat & Deviasi]
-    C --> D[Upload File Sertifikat PDF]
-    D --> E[Hitung Tanggal Kalibrasi Berikutnya Otomatis]
-    E --> F{Validasi Server}
-    F -->|Gagal| C
-    F -->|Berhasil| G[Simpan Riwayat Baru ke Database]
-    G --> H[Auto-Sort Riwayat & Update Status Master]
-    H --> I([Selesai])
+    A([Mulai]) --> B[Halaman Detail] --> C[Klik Tambah Kalibrasi] --> D[Input Tanggal, Deviasi & Upload PDF] --> E[Validasi Data] --> F[Submit] --> G([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Form Riwayat Baru** | User mengklik tombol `+ Tambah Kalibrasi` pada halaman detail instrumen. |
-| **Input Data Kalibrasi** | User menginput tanggal pelaksanaan kalibrasi, nama badan/lembaga penguji, nomor sertifikat, nilai deviasi aktual, dan catatan hasil. |
-| **Upload Sertifikat PDF** | User mengunggah dokumen digital sertifikat resmi (`.pdf`). |
-| **Kalkulasi Otomatis** | Sistem menghitung `tanggal_berikutnya` secara otomatis (`tanggal_kalibrasi + periode_kalibrasi_tahun`). |
-| **Auto-Sort & Update Status**| Sistem menyimpan riwayat baru, mengurutkan seluruh riwayat berdasarkan tanggal kalibrasi terbaru, dan meng-update tanggal sertifikasi berikutnya pada master alat. |
+| **User** | |
+| Input Riwayat Kalibrasi | - User membuka Halaman Detail instrumen<br>- User menekan tombol **+ Tambah Kalibrasi**<br>- User menginput tanggal kalibrasi, deviasi, dan mengunggah sertifikat PDF<br>- Sistem menghitung tanggal berikutnya secara otomatis<br>- User menekan tombol **Submit** untuk menyimpan riwayat<br>- Selesai |
 
 ---
 
@@ -182,20 +126,14 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Klik Tombol Hapus Riwayat pada Tabel Detail]
-    B --> C{Konfirmasi Hapus Riwayat?}
-    C -->|Batal| D([Selesai])
-    C -->|Ya| E[Hapus File Sertifikat PDF Terkait]
-    E --> F[Hapus Record Riwayat dari Database]
-    F --> G[Kalkulasi Ulang Tanggal Kalibrasi Terakhir Master]
-    G --> D
+    A([Mulai]) --> B[Halaman Detail] --> C[Klik Hapus Riwayat] --> D{Konfirmasi?} -->|Ya| E[Hapus File PDF & Recalculate Master] --> F([Selesai])
+    D -->|Tidak| F
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Trigger Hapus Riwayat** | User mengklik tombol `Hapus` pada salah satu baris riwayat kalibrasi di halaman detail. |
-| **Penghapusan Sertifikat** | Sistem menghapus file sertifikat PDF terikat dari direktori storage server. |
-| **Kalkulasi Ulang Master** | Sistem menghapus record riwayat dan secara otomatis memperbarui `tanggal_terakhir` dan `tanggal_berikutnya` pada master instrumen menggunakan riwayat terbaru yang tersisa. |
+| **User** | |
+| Hapus Riwayat Kalibrasi | - User membuka Halaman Detail instrumen<br>- User menekan tombol **Hapus** pada baris riwayat kalibrasi<br>- User mengonfirmasi dialog hapus riwayat<br>- Sistem menghapus file PDF dan menghitung ulang tanggal berikutnya master alat<br>- Selesai |
 
 ---
 
@@ -205,20 +143,10 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[User Berada di Tabel Data Instrumen]
-    B --> C{Pilih Jenis Filter}
-    C -->|Ketik Keyword| D[Input Kata Kunci di Input 'Cari...']
-    C -->|Pilih Tanggal| E[Pilih Tanggal pada Input Date Filter]
-    C -->|Pilih Page Length| F[Pilih Jumlah Baris (10/15/25/50)]
-    D & E & F --> G[DataTables Filtering Engine Update Tampilan Live]
-    G --> H{Klik 'Clear Filter'?}
-    H -->|Ya| I[Reset Seluruh Input Filter ke Default]
-    H -->|Tidak| J([Selesai])
-    I --> G
+    A([Mulai]) --> B[Menu Tabel Instrumen] --> C[Input Keyword / Pilih Tanggal Filter] --> D[DataTables Live Filtering] --> E([Selesai])
 ```
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Live Search** | User mengetikkan kata kunci (nama alat, nomor identifikasi, seksi, kategori, dll.) pada kolom `Cari...`. DataTables menyaring baris tabel secara instan (*real-time*). |
-| **Date Range Filtering**| User memilih tanggal kalibrasi tertentu pada input tanggal filter. Tabel menyaring dan hanya menampilkan instrumen yang memiliki tanggal kalibrasi sesuai. |
-| **Page Length & Reset** | User dapat menyesuaikan jumlah baris yang tampil per halaman (10, 15, 25, 50) serta mengklik `Clear Filter` untuk mengembalikan tabel ke kondisi awal. |
+| **User** | |
+| Live Search & Filter | - User memilih menu Tabel Instrumen<br>- User memasukkan kata kunci pada kolom **Cari...** atau memilih tanggal filter<br>- Sistem menyaring dan menampilkan data instrumen secara real-time<br>- User dapat menekan tombol **Clear Filter** untuk me-reset tampilan<br>- Selesai |
