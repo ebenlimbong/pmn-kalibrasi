@@ -58,21 +58,20 @@ Berikut adalah daftar hirarki alur proses bisnis yang siap dieksekusi secara ber
 
 1. **Level 1: Manajemen Navigasi & Pemantauan Dashboard**
    - `3.1` Alur Navigasi Switch Mode (Eksternal vs Internal)
-   - `3.2` Alur Pemantauan Dashboard Eksternal (Overview Cards & 4 Grafik Utama)
-   - `3.3` Alur Pemantauan Dashboard Internal (Overview Cards & 4 Grafik Utama)
+   - `3.2` Alur Pemantauan Dashboard (Eksternal & Internal)
 
 2. **Level 2: Pengelolaan Master Instrumen & Kondisi Alat**
-   - `3.4` Alur Tambah Data Master Instrumen Baru (*Add New Instrument*)
-   - `3.5` Alur Edit Data Master & Perubahan Kondisi Alat (*Edit Instrument & Condition*)
-   - `3.6` Alur Hapus Data Master Instrumen (*Delete Instrument*)
+   - `3.3` Alur Tambah Data Master Instrumen Baru (*Add New Instrument*)
+   - `3.4` Alur Edit Data Master & Perubahan Kondisi Alat (*Edit Instrument & Condition*)
+   - `3.5` Alur Hapus Data Master Instrumen (*Delete Instrument*)
 
 3. **Level 3: Pengelolaan Riwayat Kalibrasi & Sertifikat**
-   - `3.7` Alur Pemantauan Halaman Detail & Grafik Deviasi Alat
-   - `3.8` Alur Input Riwayat Kalibrasi Baru & Upload Sertifikat PDF (*Add Calibration Record*)
-   - `3.9` Alur Hapus Riwayat Kalibrasi Alat
+   - `3.6` Alur Pemantauan Halaman Detail & Grafik Deviasi Alat
+   - `3.7` Alur Input Riwayat Kalibrasi Baru & Upload Sertifikat PDF (*Add Calibration Record*)
+   - `3.8` Alur Hapus Riwayat Kalibrasi Alat
 
 4. **Level 4: Filtering Data & Fitur Operasional**
-   - `3.10` Alur Pencarian Live & Filtering Tanggal Kalibrasi (*DataTables Search & Date Range Filter*)
+   - `3.9` Alur Pencarian Live & Filtering Tanggal Kalibrasi (*DataTables Search & Date Range Filter*)
 
 ---
 
@@ -99,11 +98,11 @@ flowchart LR
 
 ---
 
-### 3.2 Alur Pemantauan Dashboard Eksternal & Internal
+### 3.2 Alur Pemantauan Dashboard (Eksternal & Internal)
 
 ```mermaid
 flowchart TD
-    A[Mulai] --> B[Sistem Mengambil Data Master & Riwayat Terbaru]
+    A[Mulai] --> B[Sistem Mengambil Data Master & Riwayat Terkait]
     B --> C[Hitung Stat Cards: Total, Dikalibrasi, Jatuh Tempo bulan ini, Rusak]
     C --> D[Render Kurva Pelaksanaan Kalibrasi Tahunan]
     C --> E[Render Grafik Kondisi Alat per Kategori]
@@ -114,10 +113,11 @@ flowchart TD
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Overview Cards** | - **Total Instrumen**: Menghitung seluruh unit instrumen terdaftar.<br>- **Dikalibrasi**: Menghitung alat dengan kalibrasi aktif (`tanggal_berikutnya >= hari ini`).<br>- **Jatuh Tempo bulan ini**: Menghitung alat yang jatuh tempo dalam 30 hari ke depan.<br>- **Rusak**: Menghitung alat dengan status kondisi `rusak`. |
+| **Penyatuan Modul** | Alur ini berlaku seragam untuk modul **Eksternal** maupun **Internal**, menyajikan indikator kinerja utama (*KPI*) kalibrasi secara terstruktur. |
+| **Overview Cards** | - **Total Instrumen**: Menghitung seluruh unit instrumen terdaftar pada modul aktif.<br>- **Dikalibrasi**: Menghitung alat dengan kalibrasi aktif (`tanggal_berikutnya >= hari ini`).<br>- **Jatuh Tempo bulan ini**: Menghitung alat yang jatuh tempo dalam 30 hari ke depan.<br>- **Rusak**: Menghitung alat dengan status kondisi fisik `rusak`. |
 | **Kurva Pelaksanaan** | Grafik *line chart* yang membandingkan target kalibrasi per bulan dengan realisasi kalibrasi (*Selesai Dikalibrasi*) pada tahun yang dipilih. |
 | **Kondisi per Kategori** | Stacked bar chart yang menampilkan statistik kondisi fisik/operasional alat per kategori (`Baik` 🟢, `Rusak` 🔴, `Perbaikan` 🟡). |
-| **Status Populasi (Pie)**| Donut chart yang memvisualisasikan proporsi instrumen (`Dikalibrasi` 🟢, `Akan Expired` 🟡, `Tidak Aktif` 🔴). |
+| **Status Populasi (Pie)**| Donut chart yang memvisualisasikan proporsi status kalibrasi (`Dikalibrasi` 🟢, `Akan Expired` 🟡, `Tidak Aktif` 🔴). |
 | **Breakdown Jenis Alat**| Stacked horizontal bar chart yang menampilkan rincian status kalibrasi per kategori instrumen (`Dikalibrasi`, `Akan Expired`, `Tidak Aktif`). |
 
 ---

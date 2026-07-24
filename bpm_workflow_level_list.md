@@ -4,9 +4,9 @@
 
 ---
 
-## 📌 Daftar Hirarki Alur Proses Bisnis (10 Level Workflows)
+## 📌 Daftar Hirarki Alur Proses Bisnis (9 Level Workflows)
 
-Berikut adalah 10 alur proses bisnis bertingkat yang disusun sesuai format **Inalum Technical Blueprint** dengan diagram alir horizontal (`flowchart LR`) serta rincian tabel proses & deskripsi.
+Berikut adalah 9 alur proses bisnis bertingkat yang disusun sesuai format **Inalum Technical Blueprint** dengan diagram alir horizontal (`flowchart LR`) serta rincian tabel proses & deskripsi.
 
 ---
 
@@ -35,11 +35,11 @@ flowchart LR
 
 ---
 
-#### 3.2 Alur Pemantauan Dashboard Eksternal
+#### 3.2 Alur Pemantauan Dashboard (Eksternal & Internal)
 
 ```mermaid
 flowchart LR
-    A([Mulai]) --> B[Ambil Data Master & Riwayat Eksternal]
+    A([Mulai]) --> B[Ambil Data Master & Riwayat Terkait]
     B --> C[Kalkulasi Stat Cards Overview]
     C --> D[Render Kurva Kalibrasi Tahunan]
     C --> E[Render Grafik Kondisi Alat per Kategori]
@@ -50,37 +50,18 @@ flowchart LR
 
 | Proses | Deskripsi |
 | :--- | :--- |
-| **Kalkulasi Stat Cards** | - **Total Instrumen**: Menghitung seluruh unit instrumen eksternal terdaftar.<br>- **Dikalibrasi**: Menghitung alat dengan kalibrasi aktif (`tanggal_berikutnya >= hari ini`).<br>- **Jatuh Tempo bulan ini**: Menghitung alat yang jatuh tempo dalam 30 hari ke depan.<br>- **Rusak**: Menghitung total alat dengan kondisi fisik `rusak`. |
+| **Penyatuan Modul** | Alur ini berlaku seragam untuk modul **Eksternal** maupun **Internal**, menyajikan indikator kinerja utama (*KPI*) kalibrasi secara terstruktur. |
+| **Kalkulasi Stat Cards** | - **Total Instrumen**: Menghitung seluruh unit instrumen terdaftar pada modul terpilih.<br>- **Dikalibrasi**: Menghitung alat dengan kalibrasi aktif (`tanggal_berikutnya >= hari ini`).<br>- **Jatuh Tempo bulan ini**: Menghitung alat yang jatuh tempo dalam 30 hari ke depan.<br>- **Rusak**: Menghitung total alat dengan kondisi fisik `rusak`. |
 | **Kurva Pelaksanaan** | Line chart membandingkan target kalibrasi per bulan dengan realisasi kalibrasi (*Selesai Dikalibrasi*) pada tahun terpilih. |
 | **Kondisi per Kategori** | Stacked column chart menampilkan statistik kondisi fisik alat per kategori (`Baik` 🟢, `Rusak` 🔴, `Perbaikan` 🟡). |
 | **Status Populasi (Pie)** | Donut chart menampilkan proporsi status kalibrasi alat (`Dikalibrasi` 🟢, `Akan Expired` 🟡, `Tidak Aktif` 🔴). |
-| **Breakdown Jenis Alat** | Horizontal stacked bar chart menampilkan distribusi status kalibrasi per jenis/kategori instrumen. |
-
----
-
-#### 3.3 Alur Pemantauan Dashboard Internal
-
-```mermaid
-flowchart LR
-    A([Mulai]) --> B[Ambil Data Master & Riwayat Internal]
-    B --> C[Kalkulasi Stat Cards Overview Standar Kerja]
-    C --> D[Render Kurva Kalibrasi Internal Tahunan]
-    C --> E[Render Grafik Kondisi Standar Kerja per Kategori]
-    C --> F[Render Status Populasi Standar Kerja - Pie Chart]
-    C --> G[Render Breakdown Status Standar Kerja per Jenis Alat]
-    D & E & F & G --> H([Selesai])
-```
-
-| Proses | Deskripsi |
-| :--- | :--- |
-| **Stat Cards Standar Kerja**| Memproses total unit, instrumen dikalibrasi, jatuh tempo bulan ini, dan kondisi rusak khusus untuk peralatan standar kerja internal. |
-| **Visualisasi Grafik** | - **Kurva Pelaksanaan Tahunan**: Monitoring realisasi vs target kalibrasi internal.<br>- **Kondisi per Kategori**: Distribusi kondisi fisik alat standar internal per kategori.<br>- **Status Populasi (Pie)**: Persentase keaktifan kalibrasi internal.<br>- **Breakdown Jenis Alat**: Rincian status kalibrasi per jenis alat standar internal. |
+| **Breakdown Jenis Alat** | Horizontal stacked bar chart menampilkan distribusi status kalibrasi per jenis/kategori instrumen (`Dikalibrasi`, `Akan Expired`, `Tidak Aktif`). |
 
 ---
 
 ### 🔹 Level 2: Pengelolaan Master Instrumen & Kondisi Alat
 
-#### 3.4 Alur Tambah Data Master Instrumen Baru (Add New Instrument)
+#### 3.3 Alur Tambah Data Master Instrumen Baru (Add New Instrument)
 
 ```mermaid
 flowchart LR
@@ -105,7 +86,7 @@ flowchart LR
 
 ---
 
-#### 3.5 Alur Edit Data Master & Perubahan Kondisi Alat (Edit Instrument)
+#### 3.4 Alur Edit Data Master & Perubahan Kondisi Alat (Edit Instrument)
 
 ```mermaid
 flowchart LR
@@ -128,7 +109,7 @@ flowchart LR
 
 ---
 
-#### 3.6 Alur Hapus Data Master Instrumen (Delete Instrument)
+#### 3.5 Alur Hapus Data Master Instrumen (Delete Instrument)
 
 ```mermaid
 flowchart LR
@@ -152,7 +133,7 @@ flowchart LR
 
 ### 🔹 Level 3: Pengelolaan Riwayat Kalibrasi & Sertifikat PDF
 
-#### 3.7 Alur Pemantauan Halaman Detail & Grafik Deviasi Alat
+#### 3.6 Alur Pemantauan Halaman Detail & Grafik Deviasi Alat
 
 ```mermaid
 flowchart LR
@@ -172,7 +153,7 @@ flowchart LR
 
 ---
 
-#### 3.8 Alur Input Riwayat Kalibrasi Baru & Upload Sertifikat PDF
+#### 3.7 Alur Input Riwayat Kalibrasi Baru & Upload Sertifikat PDF
 
 ```mermaid
 flowchart LR
@@ -197,7 +178,7 @@ flowchart LR
 
 ---
 
-#### 3.9 Alur Hapus Riwayat Kalibrasi Alat
+#### 3.8 Alur Hapus Riwayat Kalibrasi Alat
 
 ```mermaid
 flowchart LR
@@ -220,7 +201,7 @@ flowchart LR
 
 ### 🔹 Level 4: Filtering Data & Fitur Operasional
 
-#### 3.10 Alur Pencarian Live & Filtering Tanggal Kalibrasi
+#### 3.9 Alur Pencarian Live & Filtering Tanggal Kalibrasi
 
 ```mermaid
 flowchart LR
