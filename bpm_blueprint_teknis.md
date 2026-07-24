@@ -6,11 +6,16 @@
 
 ## 1. Pendahuluan
 
-Sistem **E-Calibration (Work Schedule & Instrument Monitoring)** adalah sistem informasi yang digunakan untuk mengelola inventaris instrumen pabrik, memantau masa berlaku kalibrasi, mencatat riwayat pelaksanaan kalibrasi (baik oleh badan eksternal maupun internal), serta menyajikan data analisis dalam bentuk dashboard grafik interaktif.
+Aplikasi Dashboard E-Calibration (Sistem PMN Work Schedule) adalah system yang digunakan untuk penginputan Master Instrumen, jadwal kalibrasi, serta pemantauan progress dan kondisi peralatan yang sedang berlangsung.
 
-Sistem ini terbagi menjadi 2 modul utama:
-1. **Kalibrasi Eksternal**: Pengelolaan instrumen yang proses kalibrasinya dilakukan oleh lembaga/badan kalibrasi luar terakreditasi.
-2. **Kalibrasi Internal**: Pengelolaan instrumen standar kerja yang proses kalibrasinya dilakukan secara mandiri oleh tim internal/bengkel kalibrasi INALUM.
+Berikut adalah beberapa fitur yang ada dalam aplikasi E-Calibration:
+1. **Dashboard Kalibrasi**: berisi grafik dan statistik dari status kalibrasi serta kondisi instrumen (eksternal & internal) yang sedang berlangsung
+2. **Submit new instrument**: User menambahkan daftar instrumen baru (eksternal & internal) yang akan dikalibrasi
+3. **Update instrument & condition**: User memperbarui spesifikasi teknis dan status kondisi fisik/operasional alat (Baik, Rusak, Perbaikan)
+4. **Submit calibration record & certificate**: User mengisi hasil kalibrasi, deviasi pengujian, serta mengunggah file digital sertifikat PDF
+5. **Auto calculation & next schedule**: Sistem secara otomatis menghitung tanggal kalibrasi berikutnya dan meng-update status keaktifan alat
+6. **Detail & history progress**: User dapat melihat profil instrumen, grafik kurva deviasi pengujian, serta riwayat historis kalibrasi
+7. **Live search & date filter**: User dapat melakukan pencarian data secara instan dan menyaring instrumen berdasarkan tanggal kalibrasi
 
 ---
 
