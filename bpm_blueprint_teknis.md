@@ -208,99 +208,101 @@ flowchart LR
 | Proses | Deskripsi |
 | :--- | :--- |
 | **User** | |
-| Live Search & Filter | - User memilih menu Tabel Instrumen<br>- User memasukkan kata kunci pada kolom **Cari...** atau memilih tanggal filter<br>- Sistem menyaring dan menampilkan data instrumen secara real-time<br>- User dapat menekan tombol **Clear Filter** untuk me-reset tampilan<br>- Selesai |instrumen di tabel utama. |
+| Live Search & Filter | - User memilih menu Tabel Instrumen<br>- User memasukkan kata kunci pada kolom **Cari...** atau memilih tanggal filter<br>- Sistem menyaring dan menampilkan data instrumen secara real-time<br>- User dapat menekan tombol **Clear Filter** untuk me-reset tampilan<br>- Selesai |
 
 ---
 
 ## 5. Entity Relationship Diagram (ERD)
 
-Berikut adalah diagram relasi entitas (**Entity Relationship Diagram**) yang dirancang secara presisi sesuai dengan struktur database MySQL/MariaDB yang digunakan saat ini, sehingga memudahkan tim IT INALUM untuk integrasi ke sistem existing:
+Berikut adalah diagram relasi entitas (**Entity Relationship Diagram**) yang dirancang secara presisi sesuai dengan struktur database MySQL/MariaDB yang digunakan saat ini, mengikuti format visual standar **Inalum Technical Blueprint**:
 
 ```mermaid
 erDiagram
     master_instrumen {
-        INT_UNSIGNED id PK "Auto Increment"
-        VARCHAR_100 nomor_identifikasi UK "Unique Identifier"
-        VARCHAR_255 nama_instrumen "Nama Peralatan"
-        VARCHAR_100 seksi_pemakai "QC Lab / Maintenance / dll"
-        VARCHAR_100 interval_kapasitas "Rentang Ukur"
-        VARCHAR_100 ketelitian "Tingkat Akurasi"
-        VARCHAR_100 model_tipe "Model atau Tipe"
-        VARCHAR_255 pembuat "Manufaktur / Merk"
-        VARCHAR_255 kegunaan "Fungsi Alat"
-        INT periode_kalibrasi "Interval Kalibrasi (Tahun)"
-        DATE tanggal_mulai_digunakan "Tanggal Operasional Awal"
-        VARCHAR_100 batas_penerimaan "Batas Toleransi Deviasi"
-        TEXT keterangan "Catatan Tambahan"
-        VARCHAR_255 kondisi "baik / rusak / perbaikan"
-        VARCHAR_255 foto_alat "Filename Foto Alat"
-        DATETIME created_at "Waktu Buat"
-        DATETIME updated_at "Waktu Update"
+        int id PK "NOT NULL"
+        varchar_100 nomor_identifikasi UK "NOT NULL"
+        varchar_255 nama_instrumen "NOT NULL"
+        varchar_100 seksi_pemakai
+        varchar_100 interval_kapasitas
+        varchar_100 ketelitian
+        varchar_100 model_tipe
+        varchar_255 pembuat
+        varchar_255 kegunaan
+        int periode_kalibrasi
+        date tanggal_mulai_digunakan
+        varchar_100 batas_penerimaan
+        text keterangan
+        varchar_255 kondisi
+        varchar_255 foto_alat
+        datetime created_at
+        datetime updated_at
     }
 
     riwayat_kalibrasi {
-        INT_UNSIGNED id PK "Auto Increment"
-        VARCHAR_100 nomor_identifikasi FK "References master_instrumen(nomor_identifikasi)"
-        DATE tanggal_terakhir "Tanggal Pelaksanaan Kalibrasi"
-        DATE tanggal_berikutnya "Jadwal Kalibrasi Berikutnya"
-        VARCHAR_255 badan_kalibrasi "Lembaga/Badan Penguji Eksternal"
-        VARCHAR_100 nomor_sertifikat "Nomor Sertifikat Resmi"
-        DECIMAL_10_4 deviasi_aktual "Nilai Deviasi Pengukuran"
-        VARCHAR_100 batas_penerimaan "Standar Batas saat Kalibrasi"
-        TEXT keterangan "Hasil/Catatan Kalibrasi"
-        VARCHAR_255 file_sertifikat "Filename Sertifikat PDF"
-        VARCHAR_50 status "Aktif / Tidak aktif"
-        DATETIME created_at "Waktu Buat"
-        DATETIME updated_at "Waktu Update"
+        int id PK "NOT NULL"
+        varchar_100 nomor_identifikasi FK "NOT NULL"
+        date tanggal_terakhir
+        date tanggal_berikutnya
+        varchar_255 badan_kalibrasi
+        varchar_100 nomor_sertifikat
+        decimal_10_4 deviasi_aktual
+        varchar_100 batas_penerimaan
+        text keterangan
+        varchar_255 file_sertifikat
+        varchar_50 status
+        datetime created_at
+        datetime updated_at
     }
 
     master_instrumen_internal {
-        INT_UNSIGNED id PK "Auto Increment"
-        VARCHAR_100 nomor_identifikasi UK "Unique Identifier Standar Kerja"
-        VARCHAR_255 nama_instrumen "Nama Alat Standar Internal"
-        VARCHAR_100 seksi_pemakai "Bengkel / Seksi Pemakai"
-        VARCHAR_100 interval_kapasitas "Rentang Ukur"
-        VARCHAR_100 ketelitian "Tingkat Akurasi"
-        VARCHAR_100 model_tipe "Model atau Tipe"
-        VARCHAR_255 pembuat "Manufaktur / Merk"
-        VARCHAR_255 kegunaan "Fungsi Alat Standar"
-        INT periode_kalibrasi "Interval Kalibrasi (Tahun)"
-        DATE tanggal_mulai_digunakan "Tanggal Operasional Awal"
-        VARCHAR_100 batas_penerimaan "Batas Toleransi Deviasi"
-        TEXT keterangan "Catatan Tambahan"
-        VARCHAR_255 kondisi "baik / rusak / perbaikan"
-        VARCHAR_255 foto_alat "Filename Foto Alat"
-        DATETIME created_at "Waktu Buat"
-        DATETIME updated_at "Waktu Update"
+        int id PK "NOT NULL"
+        varchar_100 nomor_identifikasi UK "NOT NULL"
+        varchar_255 nama_instrumen "NOT NULL"
+        varchar_100 seksi_pemakai
+        varchar_100 interval_kapasitas
+        varchar_100 ketelitian
+        varchar_100 model_tipe
+        varchar_255 pembuat
+        varchar_255 kegunaan
+        int periode_kalibrasi
+        date tanggal_mulai_digunakan
+        varchar_100 batas_penerimaan
+        text keterangan
+        varchar_255 kondisi
+        varchar_255 foto_alat
+        datetime created_at
+        datetime updated_at
     }
 
     riwayat_kalibrasi_internal {
-        INT_UNSIGNED id PK "Auto Increment"
-        VARCHAR_100 nomor_identifikasi FK "References master_instrumen_internal(nomor_identifikasi)"
-        DATE tanggal_terakhir "Tanggal Pelaksanaan Internal"
-        DATE tanggal_berikutnya "Jadwal Kalibrasi Internal Berikutnya"
-        VARCHAR_100 batas_penerimaan "Standar Batas Penerimaan"
-        TEXT keterangan "Hasil Pengujian Internal"
-        VARCHAR_255 file_sertifikat "Filename Bukti / Sertifikat PDF"
-        VARCHAR_50 status "Aktif / Tidak aktif"
-        DATETIME created_at "Waktu Buat"
-        DATETIME updated_at "Waktu Update"
+        int id PK "NOT NULL"
+        varchar_100 nomor_identifikasi FK "NOT NULL"
+        date tanggal_terakhir
+        date tanggal_berikutnya
+        varchar_100 batas_penerimaan
+        text keterangan
+        varchar_255 file_sertifikat
+        varchar_50 status
+        datetime created_at
+        datetime updated_at
     }
 
-    master_instrumen ||--o{ riwayat_kalibrasi : "1 to N (ON DELETE CASCADE ON UPDATE CASCADE)"
-    master_instrumen_internal ||--o{ riwayat_kalibrasi_internal : "1 to N (ON DELETE CASCADE ON UPDATE CASCADE)"
+    master_instrumen ||--o{ riwayat_kalibrasi : "nomor_identifikasi (1:N)"
+    master_instrumen_internal ||--o{ riwayat_kalibrasi_internal : "nomor_identifikasi (1:N)"
 ```
 
 ---
 
 ### Spesifikasi Relasi Database:
 1. **Relasi Modul Eksternal**:
-   - `master_instrumen.nomor_identifikasi` ➔ `riwayat_kalibrasi.nomor_identifikasi`
+   - `master_instrumen.nomor_identifikasi` (UK) ➔ `riwayat_kalibrasi.nomor_identifikasi` (FK)
    - Tipe Relasi: **1 to N (One-to-Many)**. Satu instrumen dapat memiliki banyak catatan riwayat kalibrasi dari tahun ke tahun.
-   - Constrain: `ON DELETE CASCADE ON UPDATE CASCADE`. Jika data master dihapus, seluruh riwayat kalibrasinya terhapus secara otomatis secara bersih.
+   - Constraint: `ON DELETE CASCADE ON UPDATE CASCADE`. Jika data master dihapus, seluruh riwayat kalibrasinya terhapus secara otomatis dari database.
 
 2. **Relasi Modul Internal**:
-   - `master_instrumen_internal.nomor_identifikasi` ➔ `riwayat_kalibrasi_internal.nomor_identifikasi`
+   - `master_instrumen_internal.nomor_identifikasi` (UK) ➔ `riwayat_kalibrasi_internal.nomor_identifikasi` (FK)
+   - Tipe Relasi: **1 to N (One-to-Many)**. Satu instrumen standar internal dapat memiliki banyak catatan riwayat pengujian.
+   - Constraint: `ON DELETE CASCADE ON UPDATE CASCADE`. Hapus/update beruntun secara terisolasi pada modul internal.
    - Tipe Relasi: **1 to N (One-to-Many)**.
    - Constrain: `ON DELETE CASCADE ON UPDATE CASCADE`.
 
