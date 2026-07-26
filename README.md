@@ -1,7 +1,7 @@
 # E-Calibration (Sistem Manajemen Kalibrasi Instrumen)
 **PT Indonesia Asahan Aluminium (INALUM)**
 
-Sistem **E-Calibration (PMN Work Schedule - Calibration Module)** adalah aplikasi berbasis web yang digunakan untuk mengelola inventaris instrumen pabrik, memantau masa berlaku kalibrasi, mencatat riwayat pelaksanaan pengujian, serta menyajikan visualisasi data analisis kinerja kalibrasi dalam bentuk dashboard interaktif.
+Sistem **E-Calibration (Calibration Module)** adalah aplikasi berbasis web yang digunakan untuk mengelola inventaris instrumen pabrik, memantau masa berlaku kalibrasi, mencatat riwayat pelaksanaan pengujian, serta menyajikan visualisasi data analisis kinerja kalibrasi dalam bentuk dashboard interaktif.
 
 ---
 
