@@ -449,7 +449,7 @@ class KalibrasiInternal extends CI_Controller
                 'nomor_identifikasi' => $instrumen->nomor_identifikasi,
                 'tanggal_terakhir' => $tanggalTerakhir,
                 'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int) $instrumen->periode_kalibrasi . ' years', strtotime($tanggalTerakhir))),
-                'batas_penerimaan' => $this->input->post('batas_penerimaan'),
+                'batas_penerimaan' => $instrumen->batas_penerimaan,
                 'keterangan' => $this->input->post('keterangan'),
                 'status' => 'Aktif'
             );

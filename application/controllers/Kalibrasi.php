@@ -457,7 +457,7 @@ class Kalibrasi extends CI_Controller
                 'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int) $instrumen->periode_kalibrasi . ' years', strtotime($tanggalTerakhir))),
                 'badan_kalibrasi' => $this->input->post('badan_kalibrasi'),
                 'nomor_sertifikat' => $this->input->post('nomor_sertifikat'),
-                'batas_penerimaan' => $this->input->post('batas_penerimaan'),
+                'batas_penerimaan' => $instrumen->batas_penerimaan,
                 'keterangan' => $this->input->post('keterangan'),
                 'status' => 'Aktif'
             );

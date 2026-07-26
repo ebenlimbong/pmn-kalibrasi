@@ -190,10 +190,6 @@
                   <input type="text" class="form-control" name="nomor_sertifikat">
               </div>
               <div class="mb-3">
-                  <label class="form-label text-muted fw-medium">Standar Batas Penerimaan Hasil</label>
-                  <input type="text" class="form-control" name="batas_penerimaan" placeholder="0.2 mx">
-              </div>
-              <div class="mb-3">
                   <label class="form-label text-muted fw-medium">Keterangan</label>
                   <textarea class="form-control" name="keterangan" rows="2"></textarea>
               </div>
