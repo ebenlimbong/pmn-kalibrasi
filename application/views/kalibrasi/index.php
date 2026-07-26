@@ -329,16 +329,16 @@
                                     <?php
                                         if (empty($item->tanggal_terakhir)) {
                                             $statusText = 'Belum dikalibrasi';
-                                            $badgeClass = 'badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold';
+                                            $textClass = 'text-warning';
                                         } else if (!empty($item->tanggal_berikutnya) && strtotime($item->tanggal_berikutnya) < time()) {
                                             $statusText = 'Tidak aktif';
-                                            $badgeClass = 'badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold';
+                                            $textClass = 'text-danger';
                                         } else {
                                             $statusText = 'Aktif';
-                                            $badgeClass = 'badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold';
+                                            $textClass = 'text-success';
                                         }
                                     ?>
-                                    <span class="<?= $badgeClass ?>" style="font-size: 0.78rem;"><?= esc($statusText) ?></span>
+                                    <span class="<?= $textClass ?> fw-bold"><?= esc($statusText) ?></span>
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
