@@ -203,11 +203,11 @@
         </div>
     </div>
 
-    <!-- Chart 4: Breakdown Status per Jenis/Kategori Alat (Horizontal Stacked Bar) -->
+    <!-- Chart 4: Status Kalibrasi per Jenis/Kategori Alat (Horizontal Stacked Bar) -->
     <div class="col-12 col-lg-7">
         <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-header bg-white pt-3 pb-2 border-0 d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold text-dark mb-0">Breakdown Status per Jenis Alat</h6>
+                <h6 class="fw-bold text-dark mb-0">Status Kalibrasi per Jenis Alat</h6>
                 <span class="badge bg-light text-secondary border">Kategori Alat</span>
             </div>
             <div class="card-body p-3">
@@ -222,10 +222,10 @@
 <div id="section-data-view" style="display: none;">
 
 <div class="card border-0 shadow-sm rounded-4">
-    <div class="card-body p-4">
+    <div class="card-body p-3 p-md-4">
         <div class="row align-items-center mb-3 g-2">
             <!-- First Group (Length & Search) -->
-            <div class="col-12 col-md-5 col-lg-4 d-flex gap-2">
+            <div class="col-12 col-sm-6 col-lg-4 d-flex gap-2">
                 <select id="customLength" class="form-select form-select-sm shadow-sm border-0" style="width: 70px; flex-shrink: 0;">
                     <option value="10">10</option>
                     <option value="15" selected>15</option>
@@ -238,16 +238,24 @@
                 </div>
             </div>
             
-            <!-- Second Group (Date Filter & Clear) -->
-            <div class="col-12 col-md-auto d-flex gap-2 mt-2 mt-md-0">
-                <input type="date" id="customDateFilter" class="form-control form-control-sm shadow-sm border-0 flex-grow-1" style="min-width: 140px;" title="Pilih tanggal">
-                <button id="clearFilterBtn" class="btn btn-sm text-white shadow-sm text-nowrap px-3" style="background-color: #3b5998;">Clear Filter</button>
+            <!-- Second Group (Seksi & Date Filter) -->
+            <div class="col-12 col-sm-6 col-lg-4 d-flex gap-2">
+                <select id="customSeksiFilter" class="form-select form-select-sm shadow-sm border-0 flex-grow-1" style="min-width: 120px;" title="Filter Seksi Pemakai">
+                    <option value="">Semua Seksi</option>
+                    <?php if (!empty($seksiList)): ?>
+                        <?php foreach ($seksiList as $seksi): ?>
+                            <option value="<?= esc($seksi) ?>"><?= esc($seksi) ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+                <input type="date" id="customDateFilter" class="form-control form-control-sm shadow-sm border-0 flex-grow-1" style="min-width: 130px;" title="Pilih tanggal">
             </div>
             
             <!-- Third Group (Refresh & Tambah) -->
-            <div class="col-12 col-md-auto ms-md-auto mt-2 mt-md-0 d-flex justify-content-end gap-2">
-                <button id="refreshBtn" class="btn btn-sm text-white shadow-sm text-nowrap px-3" style="background-color: #fbb03b;"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-                <a href="<?= base_url('kalibrasi/create') ?>" class="btn btn-sm btn-primary shadow-sm px-3 fw-medium" style="background-color: #3b5998; border: none;">+ Tambah Data</a>
+            <div class="col-12 col-lg-4 ms-lg-auto d-flex justify-content-start justify-content-lg-end gap-2 flex-wrap toolbar-mobile-actions">
+                <button id="clearFilterBtn" class="btn btn-sm text-white shadow-sm text-nowrap px-3 flex-fill flex-lg-grow-0" style="background-color: #3b5998;">Clear Filter</button>
+                <button id="refreshBtn" class="btn btn-sm text-white shadow-sm text-nowrap px-3 flex-fill flex-lg-grow-0" style="background-color: #fbb03b;"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                <a href="<?= base_url('kalibrasi/create') ?>" class="btn btn-sm btn-primary shadow-sm px-3 fw-medium flex-fill flex-lg-grow-0 text-nowrap" style="background-color: #3b5998; border: none;">+ Tambah Data</a>
             </div>
         </div>
 
@@ -419,21 +427,28 @@ window.addEventListener('DOMContentLoaded', function() {
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
                 var filterDate = $('#customDateFilter').val();
-                if (!filterDate) {
-                    return true;
-                }
+                var filterSeksi = $('#customSeksiFilter').val();
+                var rowSeksi = data[2] ? $.trim(data[2]) : '';
                 var rowDate = data[10];
-                return rowDate === filterDate;
+
+                if (filterSeksi && rowSeksi !== filterSeksi) {
+                    return false;
+                }
+                if (filterDate && rowDate !== filterDate) {
+                    return false;
+                }
+                return true;
             }
         );
 
-        $('#customDateFilter').on('change', function() {
+        $('#customSeksiFilter, #customDateFilter').on('change', function() {
             table.draw();
         });
 
         $('#clearFilterBtn').on('click', function() {
             $('#customSearch').val('');
             $('#customDateFilter').val('');
+            $('#customSeksiFilter').val('');
             table.search('').draw();
         });
 

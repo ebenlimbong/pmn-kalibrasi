@@ -192,13 +192,23 @@ class Kalibrasi extends CI_Controller
             'kat_overdue' => array_column($katStats, 'overdue')
         );
 
+        $seksiSet = array();
+        foreach ($instrumenList as $item) {
+            if (!empty($item->seksi_pemakai)) {
+                $seksiSet[] = trim($item->seksi_pemakai);
+            }
+        }
+        $seksiList = array_values(array_unique($seksiSet));
+        sort($seksiList);
+
         $data = array(
             'title' => 'E-Calibration | Data Instrumen',
             'instrumen' => $instrumenList,
             'summary' => $summary,
             'chartData' => $chartData,
             'selectedYear' => $selectedYear,
-            'availableYears' => $availableYears
+            'availableYears' => $availableYears,
+            'seksiList' => $seksiList
         );
         $this->load->view('layout/header', $data);
         $this->load->view('kalibrasi/index', $data);
