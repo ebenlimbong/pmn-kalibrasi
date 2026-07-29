@@ -253,6 +253,42 @@ class KalibrasiInternal extends CI_Controller
         $this->load->view('layout/footer', $data);
     }
 
+    /**
+     * Helper method to handle file uploads using CodeIgniter 3 standards.
+     * Uses FCPATH, ensures target directory exists, resets upload library config,
+     * and returns structured result with error handling.
+     */
+    private function _handleUpload($field, $uploadPath, $allowedTypes = 'gif|jpg|jpeg|png|webp')
+    {
+        if (empty($_FILES[$field]['name'])) {
+            return array('status' => TRUE, 'file_name' => NULL);
+        }
+
+        if (!is_dir($uploadPath)) {
+            @mkdir($uploadPath, 0755, TRUE);
+        }
+
+        $config = array(
+            'upload_path'   => $uploadPath,
+            'allowed_types' => $allowedTypes,
+            'encrypt_name'  => TRUE,
+            'max_size'      => 10240
+        );
+
+        if (!isset($this->upload)) {
+            $this->load->library('upload', $config);
+        } else {
+            $this->upload->initialize($config, TRUE);
+        }
+
+        if ($this->upload->do_upload($field)) {
+            $uploadData = $this->upload->data();
+            return array('status' => TRUE, 'file_name' => $uploadData['file_name']);
+        } else {
+            return array('status' => FALSE, 'error' => $this->upload->display_errors('', ''));
+        }
+    }
+
     public function store()
     {
         $nomorIdentifikasi = $this->input->post('nomor_identifikasi');
@@ -276,17 +312,14 @@ class KalibrasiInternal extends CI_Controller
         );
 
         // Handle foto_alat upload
-        if (!empty($_FILES['foto_alat']['name'])) {
-            $config['upload_path'] = './uploads/instrumen/';
-            $config['allowed_types'] = 'gif|jpg|jpeg|png|webp';
-            $config['encrypt_name'] = TRUE;
-            $this->load->library('upload', $config);
-            $this->upload->initialize($config);
-
-            if ($this->upload->do_upload('foto_alat')) {
-                $uploadData = $this->upload->data();
-                $masterData['foto_alat'] = $uploadData['file_name'];
-            }
+        $uploadPhoto = $this->_handleUpload('foto_alat', FCPATH . 'uploads/instrumen/', 'gif|jpg|jpeg|png|webp');
+        if (!$uploadPhoto['status']) {
+            $this->session->set_flashdata('error', 'Gagal mengunggah foto alat: ' . $uploadPhoto['error']);
+            redirect('kalibrasi-internal/create');
+            return;
+        }
+        if (!empty($uploadPhoto['file_name'])) {
+            $masterData['foto_alat'] = $uploadPhoto['file_name'];
         }
 
         $this->MasterInstrumenInternal_model->insert($masterData);
@@ -301,17 +334,14 @@ class KalibrasiInternal extends CI_Controller
                 'status' => 'Aktif'
             );
 
-            if (!empty($_FILES['file_sertifikat']['name'])) {
-                $configCert['upload_path'] = './uploads/sertifikat/';
-                $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
-                $configCert['encrypt_name'] = TRUE;
-                $this->load->library('upload', $configCert);
-                $this->upload->initialize($configCert);
-
-                if ($this->upload->do_upload('file_sertifikat')) {
-                    $uploadCert = $this->upload->data();
-                    $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
-                }
+            $uploadCert = $this->_handleUpload('file_sertifikat', FCPATH . 'uploads/sertifikat/', 'pdf|gif|jpg|jpeg|png');
+            if (!$uploadCert['status']) {
+                $this->session->set_flashdata('error', 'Data master instrumen tersimpan, namun gagal mengunggah sertifikat kalibrasi: ' . $uploadCert['error']);
+                redirect('kalibrasi-internal');
+                return;
+            }
+            if (!empty($uploadCert['file_name'])) {
+                $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
             }
 
             $this->RiwayatKalibrasiInternal_model->insert($riwayatData);
@@ -366,20 +396,16 @@ class KalibrasiInternal extends CI_Controller
             'kondisi' => $this->input->post('kondisi') ? strtolower($this->input->post('kondisi')) : 'baik',
         );
 
-        if (!empty($_FILES['foto_alat']['name'])) {
-            $config['upload_path'] = './uploads/instrumen/';
-            $config['allowed_types'] = 'gif|jpg|jpeg|png|webp';
-            $config['encrypt_name'] = TRUE;
-            $this->load->library('upload', $config);
-            $this->upload->initialize($config);
-
-            if ($this->upload->do_upload('foto_alat')) {
-                $uploadData = $this->upload->data();
-                $updateData['foto_alat'] = $uploadData['file_name'];
-
-                if (!empty($instrumen->foto_alat) && file_exists('./uploads/instrumen/' . $instrumen->foto_alat)) {
-                    @unlink('./uploads/instrumen/' . $instrumen->foto_alat);
-                }
+        $uploadPhoto = $this->_handleUpload('foto_alat', FCPATH . 'uploads/instrumen/', 'gif|jpg|jpeg|png|webp');
+        if (!$uploadPhoto['status']) {
+            $this->session->set_flashdata('error', 'Gagal mengunggah foto alat: ' . $uploadPhoto['error']);
+            redirect('kalibrasi-internal/edit/' . $id);
+            return;
+        }
+        if (!empty($uploadPhoto['file_name'])) {
+            $updateData['foto_alat'] = $uploadPhoto['file_name'];
+            if (!empty($instrumen->foto_alat) && file_exists(FCPATH . 'uploads/instrumen/' . $instrumen->foto_alat)) {
+                @unlink(FCPATH . 'uploads/instrumen/' . $instrumen->foto_alat);
             }
         }
 
@@ -398,18 +424,14 @@ class KalibrasiInternal extends CI_Controller
                 'status' => 'Aktif'
             );
 
-            // Handle file_sertifikat upload
-            if (!empty($_FILES['file_sertifikat']['name'])) {
-                $configCert['upload_path'] = './uploads/sertifikat/';
-                $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
-                $configCert['encrypt_name'] = TRUE;
-                $this->load->library('upload', $configCert);
-                $this->upload->initialize($configCert);
-
-                if ($this->upload->do_upload('file_sertifikat')) {
-                    $uploadCert = $this->upload->data();
-                    $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
-                }
+            $uploadCert = $this->_handleUpload('file_sertifikat', FCPATH . 'uploads/sertifikat/', 'pdf|gif|jpg|jpeg|png');
+            if (!$uploadCert['status']) {
+                $this->session->set_flashdata('error', 'Data instrumen diupdate, namun gagal mengunggah sertifikat: ' . $uploadCert['error']);
+                redirect('kalibrasi-internal/edit/' . $id);
+                return;
+            }
+            if (!empty($uploadCert['file_name'])) {
+                $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
             }
 
             if (!empty($riwayatId)) {
@@ -428,14 +450,14 @@ class KalibrasiInternal extends CI_Controller
     {
         $instrumen = $this->MasterInstrumenInternal_model->get_by_id($id);
         if ($instrumen) {
-            if (!empty($instrumen->foto_alat) && file_exists('./uploads/instrumen/' . $instrumen->foto_alat)) {
-                @unlink('./uploads/instrumen/' . $instrumen->foto_alat);
+            if (!empty($instrumen->foto_alat) && file_exists(FCPATH . 'uploads/instrumen/' . $instrumen->foto_alat)) {
+                @unlink(FCPATH . 'uploads/instrumen/' . $instrumen->foto_alat);
             }
 
             $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_nomor($instrumen->nomor_identifikasi);
             foreach ($riwayat as $r) {
-                if (!empty($r->file_sertifikat) && file_exists('./uploads/sertifikat/' . $r->file_sertifikat)) {
-                    @unlink('./uploads/sertifikat/' . $r->file_sertifikat);
+                if (!empty($r->file_sertifikat) && file_exists(FCPATH . 'uploads/sertifikat/' . $r->file_sertifikat)) {
+                    @unlink(FCPATH . 'uploads/sertifikat/' . $r->file_sertifikat);
                 }
                 $this->RiwayatKalibrasiInternal_model->delete($r->id);
             }
@@ -464,17 +486,14 @@ class KalibrasiInternal extends CI_Controller
                 'status' => 'Aktif'
             );
 
-            if (!empty($_FILES['file_sertifikat']['name'])) {
-                $configCert['upload_path'] = './uploads/sertifikat/';
-                $configCert['allowed_types'] = 'pdf|gif|jpg|jpeg|png';
-                $configCert['encrypt_name'] = TRUE;
-                $this->load->library('upload', $configCert);
-                $this->upload->initialize($configCert);
-
-                if ($this->upload->do_upload('file_sertifikat')) {
-                    $uploadCert = $this->upload->data();
-                    $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
-                }
+            $uploadCert = $this->_handleUpload('file_sertifikat', FCPATH . 'uploads/sertifikat/', 'pdf|gif|jpg|jpeg|png');
+            if (!$uploadCert['status']) {
+                $this->session->set_flashdata('error', 'Gagal mengunggah sertifikat kalibrasi: ' . $uploadCert['error']);
+                redirect('kalibrasi-internal/detail/' . $id);
+                return;
+            }
+            if (!empty($uploadCert['file_name'])) {
+                $riwayatData['file_sertifikat'] = $uploadCert['file_name'];
             }
 
             $this->RiwayatKalibrasiInternal_model->insert($riwayatData);
@@ -489,8 +508,8 @@ class KalibrasiInternal extends CI_Controller
     {
         $riwayat = $this->RiwayatKalibrasiInternal_model->get_by_id($id);
         if ($riwayat) {
-            if (!empty($riwayat->file_sertifikat) && file_exists('./uploads/sertifikat/' . $riwayat->file_sertifikat)) {
-                @unlink('./uploads/sertifikat/' . $riwayat->file_sertifikat);
+            if (!empty($riwayat->file_sertifikat) && file_exists(FCPATH . 'uploads/sertifikat/' . $riwayat->file_sertifikat)) {
+                @unlink(FCPATH . 'uploads/sertifikat/' . $riwayat->file_sertifikat);
             }
             $this->RiwayatKalibrasiInternal_model->delete($id);
         }
