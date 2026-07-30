@@ -487,7 +487,6 @@ class Kalibrasi extends CI_Controller
                 'tanggal_berikutnya' => date('Y-m-d', strtotime('+' . (int) $instrumen->periode_kalibrasi . ' years', strtotime($tanggalTerakhir))),
                 'badan_kalibrasi' => $this->input->post('badan_kalibrasi'),
                 'nomor_sertifikat' => $this->input->post('nomor_sertifikat'),
-                'batas_penerimaan' => $instrumen->batas_penerimaan,
                 'keterangan' => $this->input->post('keterangan'),
                 'status' => 'Aktif'
             );
@@ -532,14 +531,20 @@ class Kalibrasi extends CI_Controller
 
     private function updateRiwayatStatus($nomorIdentifikasi)
     {
-        $this->db->where('nomor_identifikasi', $nomorIdentifikasi)->update('riwayat_kalibrasi', array('status' => 'Tidak aktif'));
+        // Step 1: Set ALL records for this instrument to "Tidak aktif"
+        $this->db->where('nomor_identifikasi', $nomorIdentifikasi)
+            ->update('riwayat_kalibrasi', array('status' => 'Tidak aktif', 'updated_at' => date('Y-m-d H:i:s')));
+
+        // Step 2: Find the most recently inserted record (highest ID) and set it to "Aktif"
         $latest = $this->db->where('nomor_identifikasi', $nomorIdentifikasi)
-            ->order_by('tanggal_terakhir', 'DESC')
             ->order_by('id', 'DESC')
+            ->limit(1)
             ->get('riwayat_kalibrasi')
             ->row();
+
         if ($latest) {
-            $this->db->where('id', $latest->id)->update('riwayat_kalibrasi', array('status' => 'Aktif'));
+            $this->db->where('id', $latest->id)
+                ->update('riwayat_kalibrasi', array('status' => 'Aktif', 'updated_at' => date('Y-m-d H:i:s')));
         }
     }
 

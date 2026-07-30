@@ -75,7 +75,10 @@
                         <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->periode_kalibrasi) ?> Tahun</dd>
 
                         <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Kegunaan</dt>
-                        <dd class="col-sm-12 text-muted mb-0"><?= esc($instrumen->kegunaan ?? '-') ?></dd>
+                        <dd class="col-sm-12 text-muted mb-2"><?= esc($instrumen->kegunaan ?? '-') ?></dd>
+
+                        <dt class="col-sm-12 text-uppercase fw-bold text-dark mb-0" style="font-size: 0.8rem;">Standar Batas Penerimaan</dt>
+                        <dd class="col-sm-12 text-muted mb-0"><?= esc($instrumen->batas_penerimaan ?? '-') ?></dd>
                     </dl>
                 </div>
 
@@ -108,7 +111,6 @@
                             <tr class="border-bottom border-light">
                                 <th class="fw-bold border-bottom-0">Tanggal Kalibrasi</th>
                                 <th class="fw-bold border-bottom-0">Kalibrasi Berikutnya</th>
-                                <th class="fw-bold border-bottom-0">Standar Batas Penerimaan Hasil</th>
                                 <th class="fw-bold border-bottom-0">Keterangan</th>
                                 <th class="fw-bold border-bottom-0">Status</th>
                                 <th class="fw-bold border-bottom-0">Lampiran</th>
@@ -118,14 +120,13 @@
                         <tbody>
                             <?php if(empty($riwayat)) : ?>
                                 <tr>
-                                    <td colspan="7" class="text-center py-4 text-muted">Belum ada riwayat kalibrasi internal.</td>
+                                    <td colspan="6" class="text-center py-4 text-muted">Belum ada riwayat kalibrasi internal.</td>
                                 </tr>
                             <?php else : ?>
                                 <?php foreach($riwayat as $r) : ?>
                                     <tr>
                                         <td><?= esc($r->tanggal_terakhir) ?></td>
                                         <td><?= esc($r->tanggal_berikutnya) ?></td>
-                                        <td><?= esc($r->batas_penerimaan ?? '-') ?></td>
                                         <td><?= esc($r->keterangan ?? '-') ?></td>
                                         <td class="text-center">
                                             <?php
